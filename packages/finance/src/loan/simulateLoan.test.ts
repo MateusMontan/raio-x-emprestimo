@@ -102,11 +102,13 @@ describe('simulateLoan — IOF e liberado', () => {
 
   it('IOF diário usa a política vigente e soma o diário de cada amortização', () => {
     const result = simulateLoan({ ...base, iofMode: 'CASH' });
-    const expectedDaily = result.schedule.reduce((sum, row, index) => {
+    // O motor soma o IOF exato de cada parcela e arredonda uma única vez (planSchedule),
+    // então a referência faz o mesmo: sem tolerância.
+    const exactDaily = result.schedule.reduce((sum, row) => {
       const days = Math.min(daysBetween(result.contractDate, row.dueDate), 365);
-      return sum + Math.round(row.principal * 0.000082 * days) + index * 0;
+      return sum + row.principal * 0.000082 * days;
     }, 0);
-    expect(Math.abs(result.iof.dailyCents - expectedDaily)).toBeLessThanOrEqual(12);
+    expect(result.iof.dailyCents).toBe(Math.round(exactDaily));
     expect(result.iof.taxPolicyId).toBe('br-iof-pf-credito-decreto-6306');
   });
 
@@ -123,6 +125,36 @@ describe('simulateLoan — IOF e liberado', () => {
     expect(() => simulateLoan({ ...base, iofMode: 'CASH', feesCents: 999_999 })).toThrow(
       InvalidInputError,
     );
+  });
+});
+
+describe('simulateLoan — valores de referência à mão (IOF e CET)', () => {
+  // 1 parcela de R$ 1.000,00 a 0% a.m., vencimento 30 dias após a contratação, IOF à vista, sem tarifas.
+  // IOF diário: 100.000 × 0,000082 × 30 = 246 centavos. Adicional: 100.000 × 0,0038 = 380.
+  // Total de IOF: 626. Liberado: 100.000 − 626 = 99.374.
+  const oneInstallment: LoanInput = {
+    amountCents: 100_000,
+    monthlyRate: 0,
+    installments: 1,
+    system: 'PRICE',
+    contractDate: '2026-11-15',
+    iofMode: 'CASH',
+  };
+
+  it('IOF diário, adicional e total batem com a conta feita à mão', () => {
+    const result = simulateLoan(oneInstallment);
+    expect(result.iof.dailyCents).toBe(246);
+    expect(result.iof.additionalCents).toBe(380);
+    expect(result.iof.totalCents).toBe(626);
+    expect(result.releasedCents).toBe(99_374);
+    expect(result.schedule[0]?.dueDate).toBe('2026-12-15');
+  });
+
+  it('CET anual é (100.000 / 99.374)^(365/30) − 1, perto de 7,94% a.a.', () => {
+    const result = simulateLoan(oneInstallment);
+    const expectedAnnual = (100_000 / 99_374) ** (365 / 30) - 1;
+    expect(result.cetAnnual).toBeCloseTo(expectedAnnual, 9);
+    expect(result.cetAnnual).toBeCloseTo(0.0794, 4);
   });
 });
 
