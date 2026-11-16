@@ -29,5 +29,27 @@ export default tseslint.config(
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
     },
   },
+  {
+    files: ['apps/api/src/application/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: ['hono'],
+          patterns: [
+            {
+              group: ['hono/*', '@hono/*'],
+              message: 'A camada de aplicação não conhece Hono.',
+            },
+            {
+              group: ['**/infrastructure/**', '**/http/**'],
+              message:
+                'A camada de aplicação depende só de ports, nunca de infraestrutura ou HTTP.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   prettier,
 );
