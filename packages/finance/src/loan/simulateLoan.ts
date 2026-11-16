@@ -11,6 +11,9 @@ import { planSchedule, type ScheduleContext, type SchedulePlan } from './planSch
 import { normalizeLoanInput, type NormalizedLoan } from './validateLoanInput';
 import type { LoanTotals, SimulationResult, LoanInput } from './types';
 
+/** Identificador de política quando o IOF não é calculado. */
+const NO_TAX_POLICY_ID = 'none';
+
 /**
  * Facade F1: simula um empréstimo com cronograma, IOF, custo e CET.
  * Função pura: mesma entrada, mesma saída, sem I/O.
@@ -50,7 +53,7 @@ export function simulateLoan(input: LoanInput): SimulationResult {
     feesCents: loan.fees.cents,
     iof: {
       mode: loan.iofMode,
-      taxPolicyId: context.iof.policyId,
+      taxPolicyId: context.iof?.policyId ?? NO_TAX_POLICY_ID,
       dailyCents: plan.dailyIof.cents,
       additionalCents: plan.additionalIof.cents,
       totalCents: iofTotal.cents,
@@ -70,8 +73,7 @@ function buildContext(loan: NormalizedLoan): ScheduleContext {
     installments: loan.installments,
     dueDates,
     dayCounts: dueDates.map((due) => loan.contract.daysUntil(due)),
-    iof: new IofCalculator(taxPolicyFor(loan.contract)),
-    applyIof: loan.iofMode !== 'NONE',
+    iof: loan.iofMode === 'NONE' ? null : new IofCalculator(taxPolicyFor(loan.contract)),
   };
 }
 

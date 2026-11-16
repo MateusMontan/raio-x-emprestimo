@@ -21,7 +21,6 @@ function contextWith(policy: TaxPolicy): ScheduleContext {
     dueDates,
     dayCounts: dueDates.map((due) => contract.daysUntil(due)),
     iof: new IofCalculator(policy),
-    applyIof: true,
   };
 }
 

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TAX_POLICIES } from '@raiox/finance';
 import { aSimulationInput } from '../../application/testing/fixtures';
 import { get, postJson, createTestHarness, SHARE_IDS } from '../testing/harness';
 
@@ -113,9 +114,37 @@ describe('POST /api/v1/simulations/calculate', () => {
     );
 
     expect(res.status).toBe(422);
-    const body = await res.json<{ code: string; detail: string }>();
+    const body = await res.json<{
+      code: string;
+      detail: string;
+      errors: { path: string; message: string }[];
+    }>();
     expect(body.code).toBe('TAX_POLICY_NOT_FOUND');
     expect(body.detail).toBe('Nenhuma política de IOF vigente em 2021-06-01');
+    const earliest = TAX_POLICIES.map((policy) => policy.validFrom).sort()[0] ?? '';
+    const [year = '', month = '', day = ''] = earliest.split('-');
+    expect(body.errors).toEqual([
+      {
+        path: 'contractDate',
+        message: `Não há regra de IOF cadastrada para esta data. Use uma data a partir de ${day}/${month}/${year} ou escolha não calcular o IOF.`,
+      },
+    ]);
+  });
+
+  it('aceita contrato de 2021 sem IOF: o modo NONE não consulta a política de tributos', async () => {
+    const { app } = createTestHarness();
+
+    const res = await postJson(
+      app,
+      '/api/v1/simulations/calculate',
+      aSimulationInput({ contractDate: '2021-06-01', iofMode: 'NONE' }),
+    );
+
+    expect(res.status).toBe(200);
+    const body = await res.json<{
+      iof: { mode: string; taxPolicyId: string; totalCents: number };
+    }>();
+    expect(body.iof).toMatchObject({ mode: 'NONE', taxPolicyId: 'none', totalCents: 0 });
   });
 
   it('responde 500 sem vazar a mensagem quando o caso de uso lança erro inesperado', async () => {

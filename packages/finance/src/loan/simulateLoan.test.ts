@@ -87,6 +87,7 @@ describe('simulateLoan — IOF e liberado', () => {
     const result = simulateLoan({ ...base, feesCents: 1_000 });
     expect(result.iof).toMatchObject({
       mode: 'NONE',
+      taxPolicyId: 'none',
       dailyCents: 0,
       additionalCents: 0,
       totalCents: 0,
@@ -232,6 +233,12 @@ describe('simulateLoan — casos de borda', () => {
     expect(() => simulateLoan({ ...base, iofMode: 'X' as unknown as 'NONE' })).toThrow(
       'Modo de IOF desconhecido',
     );
+  });
+
+  it('sem IOF não consulta a política: contrato anterior às políticas cadastradas funciona', () => {
+    const result = simulateLoan({ ...base, contractDate: '2000-01-01', iofMode: 'NONE' });
+    expect(result.iof).toMatchObject({ mode: 'NONE', taxPolicyId: 'none', totalCents: 0 });
+    expect(result.schedule.at(-1)?.balance).toBe(0);
   });
 
   it('contratação sem política de IOF vigente gera erro dedicado', () => {

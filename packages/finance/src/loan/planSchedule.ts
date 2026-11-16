@@ -14,9 +14,8 @@ export interface ScheduleContext {
   readonly dueDates: readonly IsoDate[];
   /** Dias corridos entre a liberação e cada vencimento (R4). */
   readonly dayCounts: readonly number[];
-  readonly iof: IofCalculator;
-  /** Falso quando IOF = NONE. */
-  readonly applyIof: boolean;
+  /** Null quando IOF = NONE: a política de tributos nem é consultada. */
+  readonly iof: IofCalculator | null;
 }
 
 export interface SchedulePlan {
@@ -33,11 +32,12 @@ export interface SchedulePlan {
  */
 export function planSchedule(context: ScheduleContext, principal: Money): SchedulePlan {
   const installments = context.strategy.plan(principal, context.rate, context.installments);
+  const iof = context.iof;
   let dailyExact = 0;
   const rows = installments.map<ScheduleRow>((installment, index) => {
-    if (context.applyIof) {
+    if (iof) {
       const days = requireAt(context.dayCounts, index);
-      dailyExact += context.iof.dailyExact(installment.principal, days);
+      dailyExact += iof.dailyExact(installment.principal, days);
     }
     return {
       n: installment.n,
@@ -53,8 +53,6 @@ export function planSchedule(context: ScheduleContext, principal: Money): Schedu
     principal,
     rows,
     dailyIof: Money.fromExactCents(dailyExact),
-    additionalIof: context.applyIof
-      ? Money.fromExactCents(context.iof.additionalExact(principal))
-      : Money.ZERO,
+    additionalIof: iof ? Money.fromExactCents(iof.additionalExact(principal)) : Money.ZERO,
   };
 }
