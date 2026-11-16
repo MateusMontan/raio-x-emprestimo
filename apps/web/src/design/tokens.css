@@ -20,6 +20,8 @@
   --text-xl: 25px;
   --text-2xl: 31px;
   --text-3xl: 39px;
+  /* Frase-resultado: de --text-xl em 320px a --text-3xl em 960px (fluido, sem estourar). */
+  --text-sentence: clamp(var(--text-xl), 18px + 2.1875vw, var(--text-3xl));
 
   /* Espaçamentos */
   --space-1: 4px;

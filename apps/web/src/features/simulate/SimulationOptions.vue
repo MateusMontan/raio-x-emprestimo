@@ -22,31 +22,31 @@ const IOF_OPTIONS: readonly { value: IofMode; label: string }[] = [
     <div class="fields">
       <BaseField
         id="contratacao"
-        v-slot="campo"
+        v-slot="field"
         label="Data da contratação"
         :error="errors.contractDate"
       >
-        <DateInput v-bind="campo" v-model="form.contractDate" />
+        <DateInput v-bind="field" v-model="form.contractDate" />
       </BaseField>
 
       <BaseField
         id="primeiro-vencimento"
-        v-slot="campo"
+        v-slot="field"
         label="Primeiro vencimento"
         hint="Se você não informar, vale 30 dias depois da contratação."
         :error="errors.firstDueDate"
       >
-        <DateInput v-bind="campo" v-model="form.firstDueDate" />
+        <DateInput v-bind="field" v-model="form.firstDueDate" />
       </BaseField>
 
       <BaseField
         id="tarifas"
-        v-slot="campo"
+        v-slot="field"
         label="Tarifas e seguro"
         hint="Some o que o banco cobra além dos juros."
         :error="errors.feesCents"
       >
-        <MoneyInput v-bind="campo" v-model="form.feesCents" />
+        <MoneyInput v-bind="field" v-model="form.feesCents" />
       </BaseField>
 
       <div class="iof">
@@ -71,14 +71,6 @@ const IOF_OPTIONS: readonly { value: IofMode; label: string }[] = [
 .options {
   border-top: 1px solid var(--rule);
   padding-top: var(--space-4);
-}
-
-summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--target-min);
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .fields {

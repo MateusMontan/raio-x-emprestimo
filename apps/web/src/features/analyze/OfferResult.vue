@@ -59,19 +59,14 @@ defineProps<{ analysis: OfferAnalysis }>();
 }
 
 .sentence {
-  font-size: var(--text-xl);
+  font-size: var(--text-sentence);
   font-weight: 800;
   line-height: 1.3;
 }
 
 .sentence strong {
   font-weight: 800;
-}
-
-@media (min-width: 960px) {
-  .sentence {
-    font-size: var(--text-3xl);
-  }
+  white-space: nowrap;
 }
 
 .rate,

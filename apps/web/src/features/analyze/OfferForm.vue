@@ -47,25 +47,25 @@ async function onSubmit(): Promise<void> {
   >
     <BaseField
       id="valor-recebido"
-      v-slot="campo"
+      v-slot="field"
       label="Valor que você recebe"
       hint="O que cai na sua conta."
       :error="errors.releasedCents"
     >
-      <MoneyInput v-bind="campo" v-model="form.releasedCents" />
+      <MoneyInput v-bind="field" v-model="form.releasedCents" />
     </BaseField>
 
     <BaseField
       id="valor-parcela"
-      v-slot="campo"
+      v-slot="field"
       label="Valor da parcela"
       :error="errors.paymentCents"
     >
-      <MoneyInput v-bind="campo" v-model="form.paymentCents" />
+      <MoneyInput v-bind="field" v-model="form.paymentCents" />
     </BaseField>
 
-    <BaseField id="prazo-oferta" v-slot="campo" label="Prazo" :error="errors.installments">
-      <IntegerInput v-bind="campo" v-model="form.installments" suffix="meses" />
+    <BaseField id="prazo-oferta" v-slot="field" label="Prazo" :error="errors.installments">
+      <IntegerInput v-bind="field" v-model="form.installments" suffix="meses" />
     </BaseField>
 
     <details class="options">
@@ -73,21 +73,21 @@ async function onSubmit(): Promise<void> {
       <div class="fields">
         <BaseField
           id="contratacao-oferta"
-          v-slot="campo"
+          v-slot="field"
           label="Data da contratação"
           :error="errors.contractDate"
         >
-          <DateInput v-bind="campo" v-model="form.contractDate" />
+          <DateInput v-bind="field" v-model="form.contractDate" />
         </BaseField>
 
         <BaseField
           id="primeiro-vencimento-oferta"
-          v-slot="campo"
+          v-slot="field"
           label="Primeiro vencimento"
           hint="Se você não informar, vale 30 dias depois da contratação."
           :error="errors.firstDueDate"
         >
-          <DateInput v-bind="campo" v-model="form.firstDueDate" />
+          <DateInput v-bind="field" v-model="form.firstDueDate" />
         </BaseField>
       </div>
     </details>
@@ -106,14 +106,6 @@ async function onSubmit(): Promise<void> {
 .options {
   border-top: 1px solid var(--rule);
   padding-top: var(--space-4);
-}
-
-summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--target-min);
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .fields {

@@ -107,6 +107,44 @@ input[inputmode] {
   outline: none;
 }
 
+/* Disclosure ("Mais opções"): alvo de 44px e indicador de chevron desenhado em CSS. */
+details > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  min-height: var(--target-min);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary::after {
+  content: '';
+  width: 0.5em;
+  height: 0.5em;
+  margin-top: -0.25em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--duration-carne) var(--ease-carne);
+}
+
+details[open] > summary::after {
+  margin-top: 0.25em;
+  transform: rotate(225deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details > summary::after {
+    transition: none;
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

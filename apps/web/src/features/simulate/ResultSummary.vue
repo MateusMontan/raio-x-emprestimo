@@ -67,22 +67,19 @@ const last = computed(() => props.result.schedule.at(-1));
 .summary {
   display: grid;
   gap: var(--space-5);
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .sentence {
-  font-size: var(--text-xl);
+  font-size: var(--text-sentence);
   font-weight: 800;
   line-height: 1.3;
 }
 
 .sentence strong {
   font-weight: 800;
-}
-
-@media (min-width: 960px) {
-  .sentence {
-    font-size: var(--text-3xl);
-  }
+  white-space: nowrap;
 }
 
 .cet,
