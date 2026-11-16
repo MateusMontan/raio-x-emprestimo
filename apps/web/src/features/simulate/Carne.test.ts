@@ -55,6 +55,16 @@ describe('Carne', () => {
     expect(wrapper.find('table').exists()).toBe(false);
   });
 
+  it('marca a linha de intervalo como apresentação, sem ser uma lâmina', () => {
+    const wrapper = mount(Carne, { props: { schedule: schedule(30), animate: false } });
+
+    const gap = wrapper.find('.gap');
+    expect(gap.element.tagName).toBe('LI');
+    expect(gap.attributes('role')).toBe('presentation');
+    expect(gap.classes()).not.toContain('slip');
+    expect(wrapper.find('ol').classes()).toContain('carne');
+  });
+
   it('anima só as 6 primeiras lâminas quando animate é verdadeiro', () => {
     const wrapper = mount(Carne, { props: { schedule: schedule(12), animate: true } });
 

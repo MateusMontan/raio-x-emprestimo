@@ -71,9 +71,13 @@ const omitted = computed(() => props.schedule.length - START - END);
   display: grid;
   gap: var(--space-2);
   width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .gap {
+  list-style: none;
   padding: var(--space-2) 0;
   text-align: center;
   font-weight: 700;
