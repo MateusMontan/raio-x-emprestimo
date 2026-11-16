@@ -20,23 +20,23 @@ const open = ref(props.defaultOpen);
 const form = reactive<OfferFormState>(createDefaultOfferForm(todayIso()));
 const errors = ref<Partial<Record<OfferField, string>>>({});
 
-function isOfferField(texto: string): texto is OfferField {
-  return (OFFER_FIELDS as readonly string[]).includes(texto);
+function isOfferField(text: string): text is OfferField {
+  return (OFFER_FIELDS as readonly string[]).includes(text);
 }
 
 function onSubmit(): void {
-  const lido = offerInputSchema.safeParse(toOfferCandidate(form));
-  if (!lido.success) {
-    const porCampo: Partial<Record<OfferField, string>> = {};
-    for (const issue of lido.error.issues) {
+  const parsed = offerInputSchema.safeParse(toOfferCandidate(form));
+  if (!parsed.success) {
+    const byField: Partial<Record<OfferField, string>> = {};
+    for (const issue of parsed.error.issues) {
       const campo = String(issue.path[0] ?? '');
-      if (isOfferField(campo)) porCampo[campo] ??= issue.message;
+      if (isOfferField(campo)) byField[campo] ??= issue.message;
     }
-    errors.value = porCampo;
+    errors.value = byField;
     return;
   }
   errors.value = {};
-  add({ kind: 'offer', input: lido.data });
+  add({ kind: 'offer', input: parsed.data });
   open.value = false;
 }
 </script>

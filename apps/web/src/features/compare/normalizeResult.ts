@@ -15,9 +15,9 @@ export interface ComparedResult {
 
 /** Simulação (F1): a taxa é a informada e as parcelas vêm do cronograma. */
 export function fromSimulation(input: SimulationInput, result: SimulationResult): ComparedResult {
-  const primeira = result.schedule[0];
-  const ultima = result.schedule.at(-1);
-  if (!primeira || !ultima) throw new Error('A simulação não trouxe parcelas.');
+  const first = result.schedule[0];
+  const last = result.schedule.at(-1);
+  if (!first || !last) throw new Error('A simulação não trouxe parcelas.');
   return {
     releasedCents: result.releasedCents,
     totalPaidCents: result.totals.paidCents,
@@ -26,8 +26,8 @@ export function fromSimulation(input: SimulationInput, result: SimulationResult)
     cetAnnual: result.cetAnnual,
     monthlyRate: input.monthlyRate,
     installments: input.installments,
-    firstPaymentCents: primeira.payment,
-    lastPaymentCents: ultima.payment,
+    firstPaymentCents: first.payment,
+    lastPaymentCents: last.payment,
   };
 }
 

@@ -22,7 +22,7 @@ const emit = defineEmits<{ submit: [] }>();
 
 const formEl = ref<HTMLFormElement | null>(null);
 
-const OPCOES_SISTEMA: readonly { value: AmortizationSystem; label: string }[] = [
+const SYSTEM_OPTIONS: readonly { value: AmortizationSystem; label: string }[] = [
   { value: 'PRICE', label: 'Parcelas fixas (Price)' },
   { value: 'SAC', label: 'Parcelas que diminuem (SAC)' },
 ];
@@ -59,7 +59,7 @@ async function onSubmit(): Promise<void> {
       v-model="form.system"
       legend="Sistema"
       name="sistema"
-      :options="OPCOES_SISTEMA"
+      :options="SYSTEM_OPTIONS"
     />
     <p v-if="errors.system" class="error">{{ errors.system }}</p>
 

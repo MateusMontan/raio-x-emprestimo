@@ -14,10 +14,10 @@ export class ApiError extends Error {
 
   /** Mensagem por campo, para ligar a cada BaseField. Guarda só a primeira de cada campo. */
   fieldErrors(): Record<string, string> {
-    const porCampo: Record<string, string> = {};
-    for (const erro of this.problem.errors ?? []) {
-      porCampo[erro.path] ??= erro.message;
+    const byField: Record<string, string> = {};
+    for (const error of this.problem.errors ?? []) {
+      byField[error.path] ??= error.message;
     }
-    return porCampo;
+    return byField;
   }
 }

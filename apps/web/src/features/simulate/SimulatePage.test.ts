@@ -9,9 +9,9 @@ vi.mock('../../shared/api/client', () => ({
   shareSimulation: vi.fn(),
 }));
 
-const calcular = vi.mocked(calculateSimulation);
+const calculate = vi.mocked(calculateSimulation);
 
-function montar() {
+function mountPage() {
   return mount(SimulatePage, {
     attachTo: document.body,
     global: { stubs: { ResultSummary: true, Carne: true, ShareButton: true } },
@@ -20,8 +20,8 @@ function montar() {
 
 describe('SimulatePage', () => {
   beforeEach(() => {
-    calcular.mockReset();
-    calcular.mockResolvedValue({} as never);
+    calculate.mockReset();
+    calculate.mockResolvedValue({} as never);
   });
 
   afterEach(() => {
@@ -29,21 +29,21 @@ describe('SimulatePage', () => {
   });
 
   it('carrega a entrada recebida em history.state e calcula sozinha', async () => {
-    const entrada = simulationInputSchema.parse({
+    const entry = simulationInputSchema.parse({
       amountCents: 2_500_000,
       monthlyRate: 0.03,
       installments: 24,
       system: 'SAC',
       contractDate: '2026-11-15',
     });
-    window.history.replaceState({ input: entrada }, '');
+    window.history.replaceState({ input: entry }, '');
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
     expect(wrapper.find<HTMLInputElement>('#valor').element.value).toBe('25.000,00');
     expect(wrapper.find<HTMLInputElement>('#prazo').element.value).toBe('24');
-    expect(calcular).toHaveBeenCalledWith(
+    expect(calculate).toHaveBeenCalledWith(
       expect.objectContaining({ amountCents: 2_500_000, installments: 24, system: 'SAC' }),
       expect.anything(),
     );
@@ -53,10 +53,10 @@ describe('SimulatePage', () => {
   it('ignora history.state que não é uma entrada válida', async () => {
     window.history.replaceState({ input: { amountCents: 'x' } }, '');
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
-    expect(calcular).not.toHaveBeenCalled();
+    expect(calculate).not.toHaveBeenCalled();
     wrapper.unmount();
   });
 });

@@ -31,8 +31,8 @@ describe('CompositionBar', () => {
   it('desenha segmentos proporcionais ao total', () => {
     const wrapper = mount(CompositionBar, { props: PROPS });
 
-    const larguras = wrapper.findAll('.segment').map((segmento) => segmento.attributes('style'));
-    expect(larguras[1]).toContain('width: 57.14');
+    const widths = wrapper.findAll('.segment').map((segmento) => segmento.attributes('style'));
+    expect(widths[1]).toContain('width: 57.14');
   });
 
   it('não divide por zero quando todas as partes são zero', () => {

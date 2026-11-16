@@ -16,10 +16,10 @@ watch(
 
 /** Menor número livre para "Oferta N", sem repetir um rótulo já em uso. */
 function nextDefaultLabel(): string {
-  const usados = new Set(scenarios.value.map((cenario) => cenario.label));
-  let numero = 1;
-  while (usados.has(`Oferta ${numero}`)) numero += 1;
-  return `Oferta ${numero}`;
+  const used = new Set(scenarios.value.map((scenario) => scenario.label));
+  let counter = 1;
+  while (used.has(`Oferta ${counter}`)) counter += 1;
+  return `Oferta ${counter}`;
 }
 
 function add(draft: ScenarioDraft): boolean {
@@ -30,14 +30,14 @@ function add(draft: ScenarioDraft): boolean {
 }
 
 function remove(id: string): void {
-  scenarios.value = scenarios.value.filter((cenario) => cenario.id !== id);
+  scenarios.value = scenarios.value.filter((scenario) => scenario.id !== id);
 }
 
 function rename(id: string, label: string): void {
-  const limpo = label.trim().slice(0, LABEL_MAX_LENGTH);
-  if (limpo === '') return;
-  scenarios.value = scenarios.value.map((cenario) =>
-    cenario.id === id ? { ...cenario, label: limpo } : cenario,
+  const clean = label.trim().slice(0, LABEL_MAX_LENGTH);
+  if (clean === '') return;
+  scenarios.value = scenarios.value.map((scenario) =>
+    scenario.id === id ? { ...scenario, label: clean } : scenario,
   );
 }
 

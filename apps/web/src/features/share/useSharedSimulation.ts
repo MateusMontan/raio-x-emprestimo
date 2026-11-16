@@ -13,10 +13,10 @@ export interface SharedSimulationState {
   load: () => Promise<void>;
 }
 
-const MENSAGEM_GENERICA = 'Algo deu errado. Tente de novo.';
+const GENERIC_MESSAGE = 'Algo deu errado. Tente de novo.';
 
-function isAbortError(erro: unknown): boolean {
-  return erro instanceof Error && erro.name === 'AbortError';
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
 }
 
 /** Carrega uma simulação compartilhada (F4). `getId` é lido a cada carga. */
@@ -28,25 +28,25 @@ export function useSharedSimulation(getId: () => string): SharedSimulationState 
 
   async function load(): Promise<void> {
     controller?.abort();
-    const atual = new AbortController();
-    controller = atual;
+    const current = new AbortController();
+    controller = current;
     status.value = 'loading';
     message.value = null;
 
     try {
-      const data = await getSharedSimulation(getId(), atual.signal);
-      if (atual.signal.aborted) return;
+      const data = await getSharedSimulation(getId(), current.signal);
+      if (current.signal.aborted) return;
       shared.value = data;
       status.value = 'success';
-    } catch (erro) {
-      if (atual.signal.aborted || isAbortError(erro)) return;
+    } catch (error) {
+      if (current.signal.aborted || isAbortError(error)) return;
       shared.value = null;
-      if (erro instanceof ApiError && erro.status === 404) {
+      if (error instanceof ApiError && error.status === 404) {
         status.value = 'not-found';
         return;
       }
       status.value = 'error';
-      message.value = erro instanceof ApiError ? erro.problem.detail : MENSAGEM_GENERICA;
+      message.value = error instanceof ApiError ? error.problem.detail : GENERIC_MESSAGE;
     }
   }
 

@@ -8,11 +8,11 @@ export function focusFirstInvalid<Field extends string>(
   order: readonly Field[],
   targets: Record<Field, string>,
 ): void {
-  const campo = order.find((chave) => errors[chave] !== undefined);
+  const campo = order.find((key) => errors[key] !== undefined);
   if (campo === undefined) return;
-  const alvo = root.querySelector<HTMLElement>(targets[campo]);
-  if (!alvo) return;
-  const detalhes = alvo.closest('details');
-  if (detalhes) detalhes.open = true;
-  alvo.focus();
+  const target = root.querySelector<HTMLElement>(targets[campo]);
+  if (!target) return;
+  const details = target.closest('details');
+  if (details) details.open = true;
+  target.focus();
 }

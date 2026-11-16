@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { formatMoney } from '../../shared/format';
 import ScheduleTable from './ScheduleTable.vue';
 
-const LINHAS: ScheduleRow[] = [
+const ROWS: ScheduleRow[] = [
   {
     n: 1,
     dueDate: '2026-12-15',
@@ -36,20 +36,20 @@ const LINHAS: ScheduleRow[] = [
 
 describe('ScheduleTable', () => {
   it('tem legenda e cabeçalhos de coluna', () => {
-    const wrapper = mount(ScheduleTable, { props: { schedule: LINHAS } });
+    const wrapper = mount(ScheduleTable, { props: { schedule: ROWS } });
 
     expect(wrapper.find('caption').text()).toBe('Cronograma completo, parcela a parcela');
-    const cabecalhos = wrapper.findAll('th[scope="col"]').map((th) => th.text());
-    expect(cabecalhos).toEqual(['Nº', 'Vencimento', 'Parcela', 'Juros', 'Amortização', 'Saldo']);
+    const headers = wrapper.findAll('th[scope="col"]').map((th) => th.text());
+    expect(headers).toEqual(['Nº', 'Vencimento', 'Parcela', 'Juros', 'Amortização', 'Saldo']);
   });
 
   it('tem uma linha por parcela com datas e valores formatados', () => {
-    const wrapper = mount(ScheduleTable, { props: { schedule: LINHAS } });
+    const wrapper = mount(ScheduleTable, { props: { schedule: ROWS } });
 
     const linhas = wrapper.findAll('tbody tr');
     expect(linhas).toHaveLength(3);
-    const primeira = linhas[0]?.findAll('td').map((td) => td.text());
-    expect(primeira).toEqual([
+    const first = linhas[0]?.findAll('td').map((td) => td.text());
+    expect(first).toEqual([
       '1',
       '15/12/2026',
       formatMoney(94_560),
@@ -60,10 +60,10 @@ describe('ScheduleTable', () => {
   });
 
   it('é uma região rolável e focável no celular', () => {
-    const wrapper = mount(ScheduleTable, { props: { schedule: LINHAS } });
+    const wrapper = mount(ScheduleTable, { props: { schedule: ROWS } });
 
-    const regiao = wrapper.find('[role="region"]');
-    expect(regiao.attributes('tabindex')).toBe('0');
-    expect(regiao.attributes('aria-label')).toBeTruthy();
+    const region = wrapper.find('[role="region"]');
+    expect(region.attributes('tabindex')).toBe('0');
+    expect(region.attributes('aria-label')).toBeTruthy();
   });
 });

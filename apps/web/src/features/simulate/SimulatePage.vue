@@ -12,16 +12,16 @@ const sim = useSimulation();
 const loading = computed(() => sim.status.value === 'loading');
 
 /* "Editar esta simulação" (tela /s/:id) leva a entrada em history.state. */
-function entradaRecebida(): unknown {
-  const estado: unknown = window.history.state;
-  if (typeof estado === 'object' && estado !== null && 'input' in estado) return estado.input;
+function receivedInput(): unknown {
+  const state: unknown = window.history.state;
+  if (typeof state === 'object' && state !== null && 'input' in state) return state.input;
   return undefined;
 }
 
 onMounted(() => {
-  const lido = simulationInputSchema.safeParse(entradaRecebida());
-  if (!lido.success) return;
-  sim.load(lido.data);
+  const parsed = simulationInputSchema.safeParse(receivedInput());
+  if (!parsed.success) return;
+  sim.load(parsed.data);
   void sim.submit();
 });
 </script>

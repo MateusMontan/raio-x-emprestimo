@@ -8,52 +8,52 @@ import ScheduleTable from './ScheduleTable.vue';
 
 const props = defineProps<{ schedule: readonly ScheduleRow[]; animate: boolean }>();
 
-const LIMITE_COMPLETO = 24;
-const INICIO = 6;
-const FIM = 3;
-const TABELA_ID = 'tabela-parcelas';
+const FULL_LIST_LIMIT = 24;
+const START = 6;
+const END = 3;
+const TABLE_ID = 'tabela-parcelas';
 
-const expandida = ref(false);
-const resumido = computed(() => props.schedule.length > LIMITE_COMPLETO);
-const primeiras = computed(() =>
-  resumido.value ? props.schedule.slice(0, INICIO) : props.schedule,
+const expanded = ref(false);
+const summarized = computed(() => props.schedule.length > FULL_LIST_LIMIT);
+const firstItems = computed(() =>
+  summarized.value ? props.schedule.slice(0, START) : props.schedule,
 );
-const ultimas = computed(() => (resumido.value ? props.schedule.slice(-FIM) : []));
-const omitidas = computed(() => props.schedule.length - INICIO - FIM);
+const lastItems = computed(() => (summarized.value ? props.schedule.slice(-END) : []));
+const omitted = computed(() => props.schedule.length - START - END);
 </script>
 
 <template>
   <div class="carne-wrap">
     <ol class="carne" aria-label="Parcelas">
       <CarneSlip
-        v-for="(row, index) in primeiras"
+        v-for="(row, index) in firstItems"
         :key="row.n"
         :row="row"
         :total="schedule.length"
         :index="index"
-        :animate="animate && index < INICIO"
+        :animate="animate && index < START"
       />
-      <li v-if="resumido" class="gap" role="presentation">… {{ omitidas }} parcelas …</li>
+      <li v-if="summarized" class="gap" role="presentation">… {{ omitted }} parcelas …</li>
       <CarneSlip
-        v-for="row in ultimas"
+        v-for="row in lastItems"
         :key="row.n"
         :row="row"
         :total="schedule.length"
-        :index="INICIO"
+        :index="START"
         :animate="false"
       />
     </ol>
 
-    <template v-if="resumido">
+    <template v-if="summarized">
       <BaseButton
         variant="secondary"
-        :aria-expanded="expandida ? 'true' : 'false'"
-        :aria-controls="TABELA_ID"
-        @click="expandida = !expandida"
+        :aria-expanded="expanded ? 'true' : 'false'"
+        :aria-controls="TABLE_ID"
+        @click="expanded = !expanded"
       >
-        {{ expandida ? 'Ocultar a tabela' : 'Ver todas as parcelas' }}
+        {{ expanded ? 'Ocultar a tabela' : 'Ver todas as parcelas' }}
       </BaseButton>
-      <ScheduleTable v-if="expandida" :id="TABELA_ID" :schedule="schedule" />
+      <ScheduleTable v-if="expanded" :id="TABLE_ID" :schedule="schedule" />
     </template>
   </div>
 </template>

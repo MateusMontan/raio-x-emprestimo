@@ -11,7 +11,7 @@ vi.mock('../../shared/api/client', () => ({ getSharedSimulation: vi.fn() }));
 
 const buscar = vi.mocked(getSharedSimulation);
 
-const COMPARTILHADA = {
+const SHARED = {
   id: 'abc123',
   createdAt: '2026-11-15T12:00:00.000Z',
   expiresAt: '2027-05-14T12:00:00.000Z',
@@ -25,7 +25,7 @@ const COMPARTILHADA = {
   result: {},
 } as unknown as SharedSimulation;
 
-async function montar() {
+async function mountPage() {
   const router = createAppRouter(createMemoryHistory());
   await router.push('/s/abc123');
   await router.isReady();
@@ -49,9 +49,9 @@ describe('SharePage', () => {
   });
 
   it('mostra as entradas formatadas e a validade do link', async () => {
-    buscar.mockResolvedValue(COMPARTILHADA);
+    buscar.mockResolvedValue(SHARED);
 
-    const { wrapper } = await montar();
+    const { wrapper } = await mountPage();
 
     expect(buscar).toHaveBeenCalledWith('abc123', expect.any(AbortSignal));
     expect(wrapper.find('h1').text()).toBe('Simulação compartilhada');
@@ -64,18 +64,18 @@ describe('SharePage', () => {
   it('mostra a página de link expirado com o botão Nova simulação para 404', async () => {
     buscar.mockRejectedValue(problema(404, 'Não encontramos o que você procurou.'));
 
-    const { wrapper } = await montar();
+    const { wrapper } = await mountPage();
 
     expect(wrapper.find('h1').text()).toBe('Link expirado');
-    const botao = wrapper.findAll('a').find((link) => link.text() === 'Nova simulação');
-    expect(botao?.attributes('href')).toBe('/');
+    const button = wrapper.findAll('a').find((link) => link.text() === 'Nova simulação');
+    expect(button?.attributes('href')).toBe('/');
   });
 
   it('mostra o erro em alerta e tenta de novo ao clicar', async () => {
     buscar.mockRejectedValueOnce(problema(500, 'O servidor não conseguiu responder.'));
-    buscar.mockResolvedValueOnce(COMPARTILHADA);
+    buscar.mockResolvedValueOnce(SHARED);
 
-    const { wrapper } = await montar();
+    const { wrapper } = await mountPage();
 
     expect(wrapper.find('[role="alert"]').text()).toBe('O servidor não conseguiu responder.');
     const tentar = wrapper.findAll('button').find((b) => b.text() === 'Tentar de novo');

@@ -1,5 +1,5 @@
 import { ApiError } from './errors';
-import { problemaDeResposta, problemaGenerico, problemaSemConexao } from './problems';
+import { responseProblem, genericProblem, problemWithoutConnection } from './problems';
 
 const BASE_API = '/api/v1';
 
@@ -9,44 +9,46 @@ export interface RequestOptions {
   signal?: AbortSignal | undefined;
 }
 
-type Corpo = { ok: true; valor: unknown } | { ok: false };
+type Body = { ok: true; value: unknown } | { ok: false };
 
 /** Chamada JSON à API. Erro HTTP, rede e corpo inválido viram ApiError. */
-export async function apiRequest<T>(caminho: string, opcoes: RequestOptions): Promise<T> {
-  const resposta = await enviar(caminho, opcoes);
-  const corpo = await lerJson(resposta);
-  if (!resposta.ok) {
-    throw new ApiError(problemaDeResposta(resposta.status, corpo.ok ? corpo.valor : undefined));
+export async function apiRequest<T>(path: string, options: RequestOptions): Promise<T> {
+  const response = await send(path, options);
+  const body = await readJson(response);
+  if (!response.ok) {
+    throw new ApiError(responseProblem(response.status, body.ok ? body.value : undefined));
   }
-  if (!corpo.ok) {
-    throw new ApiError(problemaGenerico(resposta.status));
+  if (!body.ok) {
+    throw new ApiError(genericProblem(response.status));
   }
-  return corpo.valor as T;
+  return body.value as T;
 }
 
-async function enviar(caminho: string, opcoes: RequestOptions): Promise<Response> {
+async function send(path: string, options: RequestOptions): Promise<Response> {
   const init: RequestInit = {
-    method: opcoes.method,
+    method: options.method,
     headers: { accept: 'application/json', 'content-type': 'application/json' },
-    body: opcoes.body === undefined ? null : JSON.stringify(opcoes.body),
-    signal: opcoes.signal ?? null,
+    body: options.body === undefined ? null : JSON.stringify(options.body),
+    signal: options.signal ?? null,
   };
   try {
-    return await fetch(`${BASE_API}${caminho}`, init);
-  } catch (erro) {
-    if (ehCancelamento(erro)) throw erro;
-    throw new ApiError(problemaSemConexao());
+    return await fetch(`${BASE_API}${path}`, init);
+  } catch (error) {
+    if (isCancellation(error)) throw error;
+    throw new ApiError(problemWithoutConnection());
   }
 }
 
-async function lerJson(resposta: Response): Promise<Corpo> {
+async function readJson(response: Response): Promise<Body> {
   try {
-    return { ok: true, valor: (await resposta.json()) as unknown };
+    return { ok: true, value: (await response.json()) as unknown };
   } catch {
     return { ok: false };
   }
 }
 
-function ehCancelamento(erro: unknown): boolean {
-  return typeof erro === 'object' && erro !== null && 'name' in erro && erro.name === 'AbortError';
+function isCancellation(error: unknown): boolean {
+  return (
+    typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError'
+  );
 }

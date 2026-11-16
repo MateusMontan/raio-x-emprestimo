@@ -10,7 +10,7 @@ vi.mock('../../shared/api/client', () => ({ analyzeOffer: vi.fn() }));
 
 const analisar = vi.mocked(analyzeOffer);
 
-const ANALISE = { releasedCents: 500_000 } as unknown as OfferAnalysis;
+const ANALYSIS = { releasedCents: 500_000 } as unknown as OfferAnalysis;
 
 function problema(status: number, detail: string, errors?: { path: string; message: string }[]) {
   return new ApiError({ type: 'about:blank', title: 'Erro', status, detail, errors });
@@ -20,7 +20,7 @@ describe('useOfferAnalysis', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     analisar.mockReset();
-    analisar.mockResolvedValue(ANALISE);
+    analisar.mockResolvedValue(ANALYSIS);
   });
 
   afterEach(() => {
@@ -53,7 +53,7 @@ describe('useOfferAnalysis', () => {
     await oferta.submit();
 
     expect(oferta.status.value).toBe('success');
-    expect(oferta.result.value).toEqual(ANALISE);
+    expect(oferta.result.value).toEqual(ANALYSIS);
     expect(oferta.resultInput.value).toMatchObject({ releasedCents: 500_000, installments: 12 });
     expect(oferta.isFresh.value).toBe(true);
   });

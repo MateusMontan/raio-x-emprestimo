@@ -7,7 +7,7 @@ import BaseField from './BaseField.vue';
 const PROPS = { id: 'prazo', label: 'Prazo, em meses', hint: 'De 1 a 420 meses.' };
 
 /** Controle de teste que recebe os atributos do BaseField pelo slot. */
-function controleComAtributos(attrs: FieldAttrs) {
+function controlWithAttrs(attrs: FieldAttrs) {
   return h('input', {
     id: attrs.id,
     'aria-describedby': attrs.describedBy,
@@ -19,7 +19,7 @@ describe('BaseField', () => {
   it('liga o rótulo ao controle pelo id', () => {
     const wrapper = mount(BaseField, {
       props: PROPS,
-      slots: { default: (attrs: FieldAttrs) => controleComAtributos(attrs) },
+      slots: { default: (attrs: FieldAttrs) => controlWithAttrs(attrs) },
     });
 
     expect(wrapper.find('label').attributes('for')).toBe('prazo');
@@ -30,7 +30,7 @@ describe('BaseField', () => {
   it('descreve o controle pela dica, sem erro', () => {
     const wrapper = mount(BaseField, {
       props: PROPS,
-      slots: { default: (attrs: FieldAttrs) => controleComAtributos(attrs) },
+      slots: { default: (attrs: FieldAttrs) => controlWithAttrs(attrs) },
     });
 
     const input = wrapper.find('input');
@@ -41,7 +41,7 @@ describe('BaseField', () => {
   it('descreve o controle pela dica e pelo erro e marca aria-invalid', () => {
     const wrapper = mount(BaseField, {
       props: { ...PROPS, error: 'O prazo vai de 1 a 420 meses.' },
-      slots: { default: (attrs: FieldAttrs) => controleComAtributos(attrs) },
+      slots: { default: (attrs: FieldAttrs) => controlWithAttrs(attrs) },
     });
 
     const input = wrapper.find('input');

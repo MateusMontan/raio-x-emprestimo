@@ -24,7 +24,7 @@ function editar(): void {
   if (shared) void router.push({ path: '/', state: { input: shared.input } });
 }
 
-function novaSimulacao(): void {
+function newSimulation(): void {
   void router.push('/');
 }
 </script>
@@ -53,7 +53,7 @@ function novaSimulacao(): void {
       <p class="expiry">Este link vale até {{ expiryDate(sim.shared.value.expiresAt) }}.</p>
       <div class="actions">
         <BaseButton variant="secondary" @click="editar">Editar esta simulação</BaseButton>
-        <BaseButton @click="novaSimulacao">Nova simulação</BaseButton>
+        <BaseButton @click="newSimulation">Nova simulação</BaseButton>
       </div>
     </template>
   </section>

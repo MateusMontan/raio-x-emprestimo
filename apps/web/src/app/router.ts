@@ -5,7 +5,7 @@ import SharePage from '../features/share/SharePage.vue';
 import SimulatePage from '../features/simulate/SimulatePage.vue';
 import NotFoundPage from './NotFoundPage.vue';
 
-const NOME_DO_PRODUTO = 'Raio-X do Empréstimo';
+const PRODUCT_NAME = 'Raio-X do Empréstimo';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -42,7 +42,7 @@ export function createAppRouter(history: RouterHistory = createWebHistory()) {
   });
 
   router.afterEach((to) => {
-    document.title = `${to.meta.title} | ${NOME_DO_PRODUTO}`;
+    document.title = `${to.meta.title} | ${PRODUCT_NAME}`;
   });
 
   return router;

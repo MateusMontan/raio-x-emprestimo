@@ -6,8 +6,8 @@ import { formatMoney, formatPercent } from '../../shared/format';
 
 const props = defineProps<{ result: SimulationResult }>();
 
-const primeira = computed(() => props.result.schedule[0]);
-const ultima = computed(() => props.result.schedule.at(-1));
+const first = computed(() => props.result.schedule[0]);
+const last = computed(() => props.result.schedule.at(-1));
 </script>
 
 <template>
@@ -51,13 +51,13 @@ const ultima = computed(() => props.result.schedule.at(-1));
         <dt>Tarifas e seguro</dt>
         <dd class="num">{{ formatMoney(result.feesCents) }}</dd>
       </div>
-      <div v-if="primeira">
+      <div v-if="first">
         <dt>Primeira parcela</dt>
-        <dd class="num">{{ formatMoney(primeira.payment) }}</dd>
+        <dd class="num">{{ formatMoney(first.payment) }}</dd>
       </div>
-      <div v-if="ultima">
+      <div v-if="last">
         <dt>Última parcela</dt>
-        <dd class="num">{{ formatMoney(ultima.payment) }}</dd>
+        <dd class="num">{{ formatMoney(last.payment) }}</dd>
       </div>
     </dl>
   </section>

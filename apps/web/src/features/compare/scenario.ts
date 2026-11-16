@@ -20,29 +20,29 @@ export type Scenario = ScenarioDraft & { id: string; label: string };
 /** Valida a entrada conforme o tipo. Devolve null se a entrada não passa no schema. */
 export function toDraft(kind: ScenarioKind, input: unknown): ScenarioDraft | null {
   if (kind === 'simulation') {
-    const lido = simulationInputSchema.safeParse(input);
-    return lido.success ? { kind: 'simulation', input: lido.data } : null;
+    const parsed = simulationInputSchema.safeParse(input);
+    return parsed.success ? { kind: 'simulation', input: parsed.data } : null;
   }
-  const lido = offerInputSchema.safeParse(input);
-  return lido.success ? { kind: 'offer', input: lido.data } : null;
+  const parsed = offerInputSchema.safeParse(input);
+  return parsed.success ? { kind: 'offer', input: parsed.data } : null;
 }
 
-function isRecord(valor: unknown): valor is Record<string, unknown> {
-  return typeof valor === 'object' && valor !== null;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }
 
 /** Revalida o que veio do sessionStorage e descarta os itens inválidos. */
 export function parseStoredScenarios(bruto: unknown): Scenario[] {
   if (!Array.isArray(bruto)) return [];
-  const cenarios: Scenario[] = [];
+  const scenarios: Scenario[] = [];
   for (const item of bruto) {
-    if (cenarios.length >= MAX_COMPARE_SCENARIOS) break;
+    if (scenarios.length >= MAX_COMPARE_SCENARIOS) break;
     if (!isRecord(item)) continue;
     const { id, label, kind, input } = item;
     if (typeof id !== 'string' || typeof label !== 'string') continue;
     if (kind !== 'simulation' && kind !== 'offer') continue;
     const draft = toDraft(kind, input);
-    if (draft) cenarios.push({ ...draft, id, label });
+    if (draft) scenarios.push({ ...draft, id, label });
   }
-  return cenarios;
+  return scenarios;
 }

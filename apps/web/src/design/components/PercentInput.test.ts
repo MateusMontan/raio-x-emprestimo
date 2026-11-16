@@ -7,7 +7,7 @@ interface ComEmitidos {
   emitted(evento: string): unknown[][] | undefined;
 }
 
-function ultimoValor(wrapper: ComEmitidos): unknown {
+function lastValue(wrapper: ComEmitidos): unknown {
   const eventos = wrapper.emitted('update:modelValue') ?? [];
   return eventos.at(-1)?.[0];
 }
@@ -20,7 +20,7 @@ describe('PercentInput', () => {
 
     await wrapper.find('input').setValue('2,5');
 
-    expect(ultimoValor(wrapper)).toBe(0.025);
+    expect(lastValue(wrapper)).toBe(0.025);
   });
 
   it('emite null quando o texto não é um percentual', async () => {
@@ -30,7 +30,7 @@ describe('PercentInput', () => {
 
     await wrapper.find('input').setValue('muito');
 
-    expect(ultimoValor(wrapper)).toBeNull();
+    expect(lastValue(wrapper)).toBeNull();
   });
 
   it('mostra a fração recebida como percentual sem o símbolo', () => {

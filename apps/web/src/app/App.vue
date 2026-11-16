@@ -8,10 +8,10 @@ const route = useRoute();
 watch(
   () => route.fullPath,
   () => {
-    const titulo = document.querySelector<HTMLHeadingElement>('#conteudo h1');
-    if (!titulo) return;
-    titulo.setAttribute('tabindex', '-1');
-    titulo.focus();
+    const heading = document.querySelector<HTMLHeadingElement>('#conteudo h1');
+    if (!heading) return;
+    heading.setAttribute('tabindex', '-1');
+    heading.focus();
   },
   { flush: 'post' },
 );

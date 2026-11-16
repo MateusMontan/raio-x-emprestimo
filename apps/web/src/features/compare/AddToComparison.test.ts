@@ -5,14 +5,14 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import AddToComparison from './AddToComparison.vue';
 import { useComparison } from './useComparison';
 
-const entrada = offerInputSchema.parse({
+const entry = offerInputSchema.parse({
   releasedCents: 500_000,
   paymentCents: 50_000,
   installments: 12,
   contractDate: '2026-11-15',
 });
 
-async function criarRoteador() {
+async function createTestRouter() {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -25,10 +25,10 @@ async function criarRoteador() {
   return router;
 }
 
-async function montar() {
-  const router = await criarRoteador();
+async function mountPage() {
+  const router = await createTestRouter();
   const wrapper = mount(AddToComparison, {
-    props: { kind: 'offer', input: entrada },
+    props: { kind: 'offer', input: entry },
     global: { plugins: [router], stubs: { RouterLink: RouterLinkStub } },
   });
   return { wrapper, router };
@@ -45,7 +45,7 @@ describe('AddToComparison', () => {
   });
 
   it('adiciona o cenário e navega para /comparar', async () => {
-    const { wrapper, router } = await montar();
+    const { wrapper, router } = await mountPage();
 
     await wrapper.find('button').trigger('click');
     await flushPromises();
@@ -58,10 +58,10 @@ describe('AddToComparison', () => {
 
   it('mostra o aviso quando a comparação já tem três ofertas', async () => {
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
-    const { wrapper, router } = await montar();
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
+    const { wrapper, router } = await mountPage();
 
     await wrapper.find('button').trigger('click');
     await flushPromises();

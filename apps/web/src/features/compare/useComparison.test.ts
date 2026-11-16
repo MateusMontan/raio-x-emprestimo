@@ -44,12 +44,12 @@ describe('useComparison', () => {
     const { add, remove, scenarios } = useComparison();
     add({ kind: 'offer', input: oferta });
     add({ kind: 'offer', input: oferta });
-    const primeiro = scenarios.value[0];
-    if (primeiro === undefined) throw new Error('sem cenário');
-    remove(primeiro.id);
+    const first = scenarios.value[0];
+    if (first === undefined) throw new Error('sem cenário');
+    remove(first.id);
     add({ kind: 'offer', input: oferta });
 
-    expect(scenarios.value.map((cenario) => cenario.label)).toEqual(['Oferta 2', 'Oferta 1']);
+    expect(scenarios.value.map((scenario) => scenario.label)).toEqual(['Oferta 2', 'Oferta 1']);
   });
 
   it('salva a comparação no sessionStorage e a recarrega', async () => {
@@ -64,15 +64,15 @@ describe('useComparison', () => {
   });
 
   it('descarta do sessionStorage os itens que não passam na validação', async () => {
-    const valido = { id: 'a', label: 'Oferta 1', kind: 'offer', input: oferta };
+    const valid = { id: 'a', label: 'Oferta 1', kind: 'offer', input: oferta };
     const invalido = { id: 'b', label: 'Oferta 2', kind: 'offer', input: { releasedCents: 'x' } };
     const desconhecido = { id: 'c', label: 'Oferta 3', kind: 'loan', input: oferta };
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify([valido, invalido, desconhecido]));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify([valid, invalido, desconhecido]));
 
     vi.resetModules();
     const { useComparison: recarregado } = await import('./useComparison');
 
-    expect(recarregado().scenarios.value.map((cenario) => cenario.id)).toEqual(['a']);
+    expect(recarregado().scenarios.value.map((scenario) => scenario.id)).toEqual(['a']);
   });
 
   it('ignora um sessionStorage com JSON inválido', async () => {
@@ -97,11 +97,11 @@ describe('useComparison', () => {
   it('renomeia um cenário e ignora nome vazio', () => {
     const { add, rename, scenarios } = useComparison();
     add({ kind: 'offer', input: oferta });
-    const cenario = scenarios.value[0];
-    if (cenario === undefined) throw new Error('sem cenário');
+    const scenario = scenarios.value[0];
+    if (scenario === undefined) throw new Error('sem cenário');
 
-    rename(cenario.id, '  Banco Sul  ');
-    rename(cenario.id, '   ');
+    rename(scenario.id, '  Banco Sul  ');
+    rename(scenario.id, '   ');
 
     expect(scenarios.value[0]?.label).toBe('Banco Sul');
   });
@@ -110,11 +110,11 @@ describe('useComparison', () => {
     const { add, remove, scenarios } = useComparison();
     add({ kind: 'offer', input: oferta });
     add({ kind: 'offer', input: oferta });
-    const [primeiro, segundo] = scenarios.value;
-    if (primeiro === undefined || segundo === undefined) throw new Error('faltam cenários');
+    const [first, segundo] = scenarios.value;
+    if (first === undefined || segundo === undefined) throw new Error('faltam cenários');
 
-    remove(primeiro.id);
+    remove(first.id);
 
-    expect(scenarios.value.map((cenario) => cenario.id)).toEqual([segundo.id]);
+    expect(scenarios.value.map((scenario) => scenario.id)).toEqual([segundo.id]);
   });
 });

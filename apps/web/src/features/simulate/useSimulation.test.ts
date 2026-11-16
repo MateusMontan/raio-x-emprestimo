@@ -8,15 +8,15 @@ import { useSimulation } from './useSimulation';
 
 vi.mock('../../shared/api/client', () => ({ calculateSimulation: vi.fn() }));
 
-const calcular = vi.mocked(calculateSimulation);
+const calculate = vi.mocked(calculateSimulation);
 
-const RESULTADO = { releasedCents: 1_000_000 } as unknown as SimulationResult;
+const RESULT = { releasedCents: 1_000_000 } as unknown as SimulationResult;
 
 function problema(status: number, detail: string, errors?: { path: string; message: string }[]) {
   return new ApiError({ type: 'about:blank', title: 'Erro', status, detail, errors });
 }
 
-function entradaValida() {
+function validInput() {
   return simulationInputSchema.parse({
     amountCents: 1_000_000,
     monthlyRate: 0.02,
@@ -29,8 +29,8 @@ function entradaValida() {
 describe('useSimulation', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    calcular.mockReset();
-    calcular.mockResolvedValue(RESULTADO);
+    calculate.mockReset();
+    calculate.mockResolvedValue(RESULT);
   });
 
   afterEach(() => {
@@ -58,7 +58,7 @@ describe('useSimulation', () => {
 
     expect(sim.errors.value.amountCents).toBe('Informe o valor.');
     expect(sim.errors.value.contractDate).toBe('Informe a data.');
-    expect(calcular).not.toHaveBeenCalled();
+    expect(calculate).not.toHaveBeenCalled();
   });
 
   it('calcula com sucesso e guarda o resultado e a entrada validada', async () => {
@@ -67,13 +67,13 @@ describe('useSimulation', () => {
     await sim.submit();
 
     expect(sim.status.value).toBe('success');
-    expect(sim.result.value).toEqual(RESULTADO);
+    expect(sim.result.value).toEqual(RESULT);
     expect(sim.resultInput.value).toMatchObject({ amountCents: 1_000_000, installments: 12 });
     expect(sim.errors.value).toEqual({});
   });
 
   it('leva o erro 422 da API para o campo correspondente', async () => {
-    calcular.mockRejectedValue(
+    calculate.mockRejectedValue(
       problema(422, 'Confira os campos.', [
         { path: 'installments', message: 'O prazo vai de 1 a 420 meses.' },
       ]),
@@ -88,7 +88,7 @@ describe('useSimulation', () => {
   });
 
   it('mostra o detail do problema como erro geral quando não há campo', async () => {
-    calcular.mockRejectedValue(problema(500, 'O servidor caiu.'));
+    calculate.mockRejectedValue(problema(500, 'O servidor caiu.'));
     const sim = useSimulation();
 
     await sim.submit();
@@ -100,16 +100,16 @@ describe('useSimulation', () => {
   it('recalcula sozinho depois de 400 ms quando a mudança é válida', async () => {
     const sim = useSimulation();
     await sim.submit();
-    calcular.mockClear();
+    calculate.mockClear();
 
     sim.form.monthlyRate = 0.03;
     await nextTick();
     vi.advanceTimersByTime(399);
-    expect(calcular).not.toHaveBeenCalled();
+    expect(calculate).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(1);
     await flushPromises();
-    expect(calcular).toHaveBeenCalledTimes(1);
+    expect(calculate).toHaveBeenCalledTimes(1);
   });
 
   it('marca isFresh como true no clique e false no recálculo automático', async () => {
@@ -129,7 +129,7 @@ describe('useSimulation', () => {
   it('mostra o erro do campo e mantém o último resultado quando a mudança é inválida', async () => {
     const sim = useSimulation();
     await sim.submit();
-    calcular.mockClear();
+    calculate.mockClear();
 
     sim.form.installments = 0;
     await nextTick();
@@ -137,8 +137,8 @@ describe('useSimulation', () => {
     await flushPromises();
 
     expect(sim.errors.value.installments).toBe('O prazo vai de 1 a 420 meses.');
-    expect(calcular).not.toHaveBeenCalled();
-    expect(sim.result.value).toEqual(RESULTADO);
+    expect(calculate).not.toHaveBeenCalled();
+    expect(sim.result.value).toEqual(RESULT);
   });
 
   it('não recalcula antes do primeiro clique em Calcular', async () => {
@@ -149,13 +149,13 @@ describe('useSimulation', () => {
     vi.advanceTimersByTime(400);
     await flushPromises();
 
-    expect(calcular).not.toHaveBeenCalled();
+    expect(calculate).not.toHaveBeenCalled();
   });
 
   it('load preenche o formulário com uma entrada validada', () => {
     const sim = useSimulation();
 
-    sim.load(entradaValida());
+    sim.load(validInput());
 
     expect(sim.form.amountCents).toBe(1_000_000);
     expect(sim.form.firstDueDate).toBe('');

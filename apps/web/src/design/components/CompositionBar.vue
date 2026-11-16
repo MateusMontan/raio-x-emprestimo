@@ -12,29 +12,29 @@ const props = defineProps<{
   chargesCents: number;
 }>();
 
-const partes = computed(() => [
-  { chave: 'juros', rotulo: 'Juros', cor: 'var(--interest)', cents: props.interestCents },
+const parts = computed(() => [
+  { key: 'juros', rotulo: 'Juros', cor: 'var(--interest)', cents: props.interestCents },
   {
-    chave: 'amortizacao',
+    key: 'amortizacao',
     rotulo: 'Amortização',
     cor: 'var(--principal)',
     cents: props.principalCents,
   },
-  { chave: 'encargos', rotulo: 'Encargos', cor: 'var(--charges)', cents: props.chargesCents },
+  { key: 'encargos', rotulo: 'Encargos', cor: 'var(--charges)', cents: props.chargesCents },
 ]);
 
-const total = computed(() => partes.value.reduce((soma, parte) => soma + parte.cents, 0));
+const total = computed(() => parts.value.reduce((soma, part) => soma + part.cents, 0));
 
-function fracao(cents: number): number {
+function fraction(cents: number): number {
   return total.value === 0 ? 0 : cents / total.value;
 }
 
 const descricao = computed(() => {
-  const detalhes = partes.value.map(
-    (parte) =>
-      `${parte.rotulo.toLowerCase()} ${formatMoney(parte.cents)} (${formatPercent(fracao(parte.cents), 0)})`,
+  const details = parts.value.map(
+    (part) =>
+      `${part.rotulo.toLowerCase()} ${formatMoney(part.cents)} (${formatPercent(fraction(part.cents), 0)})`,
   );
-  return `Composição da parcela de ${formatMoney(total.value)}: ${detalhes.join(', ')}.`;
+  return `Composição da parcela de ${formatMoney(total.value)}: ${details.join(', ')}.`;
 });
 </script>
 
@@ -42,17 +42,17 @@ const descricao = computed(() => {
   <figure class="composition">
     <div class="track" role="img" :aria-label="descricao">
       <span
-        v-for="parte in partes"
-        :key="parte.chave"
+        v-for="part in parts"
+        :key="part.key"
         class="segment"
-        :style="{ width: `${fracao(parte.cents) * 100}%`, background: parte.cor }"
+        :style="{ width: `${fraction(part.cents) * 100}%`, background: part.cor }"
       />
     </div>
     <ul class="legend">
-      <li v-for="parte in partes" :key="parte.chave" class="item">
-        <span class="swatch" :style="{ background: parte.cor }" aria-hidden="true" />
-        <span class="label">{{ parte.rotulo }}</span>
-        <span class="value num">{{ formatMoney(parte.cents) }}</span>
+      <li v-for="part in parts" :key="part.key" class="item">
+        <span class="swatch" :style="{ background: part.cor }" aria-hidden="true" />
+        <span class="label">{{ part.rotulo }}</span>
+        <span class="value num">{{ formatMoney(part.cents) }}</span>
       </li>
     </ul>
   </figure>

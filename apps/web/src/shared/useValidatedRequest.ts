@@ -45,10 +45,10 @@ export interface ValidatedRequest<Input, Output, Field extends string> {
 }
 
 const DEBOUNCE_MS = 400;
-const MENSAGEM_GENERICA = 'Algo deu errado. Tente de novo.';
+const GENERIC_MESSAGE = 'Algo deu errado. Tente de novo.';
 
-function isAbortError(erro: unknown): boolean {
-  return erro instanceof Error && erro.name === 'AbortError';
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
 }
 
 /**
@@ -74,18 +74,18 @@ export function useValidatedRequest<Form extends object, Input, Output, Field ex
   let timer: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;
 
-  function isField(chave: string): chave is Field {
-    return (fields as readonly string[]).includes(chave);
+  function isField(key: string): key is Field {
+    return (fields as readonly string[]).includes(key);
   }
 
   /** Primeira mensagem de cada campo conhecido. Campos desconhecidos ficam de fora. */
   function errorsFromIssues(issues: readonly ValidationIssue[]): FieldErrors<Field> {
-    const porCampo: FieldErrors<Field> = {};
+    const byField: FieldErrors<Field> = {};
     for (const issue of issues) {
-      const chave = String(issue.path[0] ?? '');
-      if (isField(chave)) porCampo[chave] ??= issue.message;
+      const key = String(issue.path[0] ?? '');
+      if (isField(key)) byField[key] ??= issue.message;
     }
-    return porCampo;
+    return byField;
   }
 
   function clearTimer(): void {
@@ -94,30 +94,30 @@ export function useValidatedRequest<Form extends object, Input, Output, Field ex
   }
 
   function validate(): Input | null {
-    const lido = validator.safeParse(toCandidate(form));
-    if (lido.success) {
+    const parsed = validator.safeParse(toCandidate(form));
+    if (parsed.success) {
       errors.value = {};
-      return lido.data;
+      return parsed.data;
     }
-    errors.value = errorsFromIssues(lido.error.issues);
+    errors.value = errorsFromIssues(parsed.error.issues);
     return null;
   }
 
-  function handleError(erro: unknown): void {
+  function handleError(error: unknown): void {
     status.value = 'error';
-    if (!(erro instanceof ApiError)) {
-      generalError.value = MENSAGEM_GENERICA;
+    if (!(error instanceof ApiError)) {
+      generalError.value = GENERIC_MESSAGE;
       return;
     }
-    const conhecidos: FieldErrors<Field> = {};
-    for (const [chave, mensagem] of Object.entries(erro.fieldErrors())) {
-      if (isField(chave)) conhecidos[chave] = mensagem;
+    const known: FieldErrors<Field> = {};
+    for (const [key, message] of Object.entries(error.fieldErrors())) {
+      if (isField(key)) known[key] = message;
     }
-    if (erro.status === 422 && Object.keys(conhecidos).length > 0) {
-      errors.value = conhecidos;
+    if (error.status === 422 && Object.keys(known).length > 0) {
+      errors.value = known;
       return;
     }
-    generalError.value = erro.problem.detail;
+    generalError.value = error.problem.detail;
   }
 
   async function run(fresh: boolean): Promise<void> {
@@ -125,21 +125,21 @@ export function useValidatedRequest<Form extends object, Input, Output, Field ex
     if (!input) return;
 
     controller?.abort();
-    const atual = new AbortController();
-    controller = atual;
+    const current = new AbortController();
+    controller = current;
     status.value = 'loading';
     generalError.value = null;
 
     try {
-      const data = await send(input, atual.signal);
-      if (atual.signal.aborted) return;
+      const data = await send(input, current.signal);
+      if (current.signal.aborted) return;
       result.value = data;
       resultInput.value = input;
       isFresh.value = fresh;
       status.value = 'success';
-    } catch (erro) {
-      if (atual.signal.aborted || isAbortError(erro)) return;
-      handleError(erro);
+    } catch (error) {
+      if (current.signal.aborted || isAbortError(error)) return;
+      handleError(error);
     }
   }
 

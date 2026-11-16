@@ -11,10 +11,10 @@ const REQUISICAO = {
   contractDate: '2026-11-15',
 } as unknown as SimulationRequest;
 
-const RESULTADO = { totals: { paidCents: 1_100_000 } } as unknown as SimulationResult;
+const RESULT = { totals: { paidCents: 1_100_000 } } as unknown as SimulationResult;
 
-function respostaJson(corpo: unknown, status = 200): Response {
-  return new Response(JSON.stringify(corpo), {
+function responseJson(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json' },
   });
@@ -33,11 +33,11 @@ describe('cliente da API', () => {
   });
 
   it('envia o cálculo em JSON para a rota v1 e devolve o resultado', async () => {
-    fetchMock.mockResolvedValue(respostaJson(RESULTADO));
+    fetchMock.mockResolvedValue(responseJson(RESULT));
 
     const resultado = await calculateSimulation(REQUISICAO);
 
-    expect(resultado).toEqual(RESULTADO);
+    expect(resultado).toEqual(RESULT);
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/simulations/calculate',
       expect.objectContaining({ method: 'POST', body: JSON.stringify(REQUISICAO) }),
@@ -46,7 +46,7 @@ describe('cliente da API', () => {
 
   it('expõe os erros de campo de um Problem com errors[]', async () => {
     fetchMock.mockResolvedValue(
-      respostaJson(
+      responseJson(
         {
           type: 'about:blank',
           title: 'Dados inválidos',
@@ -86,7 +86,7 @@ describe('cliente da API', () => {
   });
 
   it('usa o erro genérico quando o JSON de erro não é um Problem', async () => {
-    fetchMock.mockResolvedValue(respostaJson({ outra: 'coisa' }, 404));
+    fetchMock.mockResolvedValue(responseJson({ outra: 'coisa' }, 404));
 
     const erro = await calculateSimulation(REQUISICAO).catch((e: unknown) => e);
 
@@ -106,11 +106,11 @@ describe('cliente da API', () => {
   });
 
   it('repassa o cancelamento sem transformar em erro de rede', async () => {
-    const cancelamento = new DOMException('Abortado', 'AbortError');
-    fetchMock.mockRejectedValue(cancelamento);
+    const cancellation = new DOMException('Abortado', 'AbortError');
+    fetchMock.mockRejectedValue(cancellation);
 
     const erro = await calculateSimulation(REQUISICAO).catch((e: unknown) => e);
 
-    expect(erro).toBe(cancelamento);
+    expect(erro).toBe(cancellation);
   });
 });

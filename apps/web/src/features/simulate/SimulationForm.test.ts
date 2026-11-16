@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import SimulationForm from './SimulationForm.vue';
 import { createDefaultForm } from './simulationForm';
 
-function montar(errors: Record<string, string> = {}) {
+function mountPage(errors: Record<string, string> = {}) {
   return mount(SimulationForm, {
     props: { form: createDefaultForm('2026-11-15'), errors, loading: false },
     attachTo: document.body,
@@ -12,23 +12,23 @@ function montar(errors: Record<string, string> = {}) {
 }
 
 describe('SimulationForm', () => {
-  const montados: { unmount: () => void }[] = [];
+  const mounted: { unmount: () => void }[] = [];
 
   afterEach(() => {
-    for (const wrapper of montados.splice(0)) wrapper.unmount();
+    for (const wrapper of mounted.splice(0)) wrapper.unmount();
   });
 
   function criar(errors: Record<string, string> = {}) {
-    const wrapper = montar(errors);
-    montados.push(wrapper);
+    const wrapper = mountPage(errors);
+    mounted.push(wrapper);
     return wrapper;
   }
 
   it('mostra os campos principais com os rótulos pedidos', () => {
     const wrapper = criar();
 
-    const rotulos = wrapper.findAll('label').map((label) => label.text());
-    expect(rotulos).toEqual(
+    const labels = wrapper.findAll('label').map((label) => label.text());
+    expect(labels).toEqual(
       expect.arrayContaining([
         'Valor do empréstimo',
         'Taxa de juros ao mês',
@@ -66,20 +66,20 @@ describe('SimulationForm', () => {
     await wrapper.find('form').trigger('submit');
     await nextTick();
 
-    const detalhes = wrapper.find('details').element;
-    expect(detalhes.open).toBe(true);
+    const details = wrapper.find('details').element;
+    expect(details.open).toBe(true);
     expect(document.activeElement?.id).toBe('contratacao');
   });
 
   it('não move o foco quando o envio está válido', async () => {
     const wrapper = criar();
-    const botao = wrapper.find('button[type="submit"]').element as HTMLElement;
-    botao.focus();
+    const button = wrapper.find('button[type="submit"]').element as HTMLElement;
+    button.focus();
 
     await wrapper.find('form').trigger('submit');
     await nextTick();
 
-    expect(document.activeElement).toBe(botao);
+    expect(document.activeElement).toBe(button);
   });
 
   it('marca o botão Calcular como ocupado durante o carregamento', () => {

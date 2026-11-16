@@ -9,35 +9,35 @@ export interface ReadyEntry {
   result: ComparedResult;
 }
 
-function subject(nomes: readonly string[]): string {
-  const [primeiro] = nomes;
-  if (nomes.length === 1 && primeiro !== undefined) return `A ${primeiro}`;
-  return nomes.join(' e ');
+function subject(names: readonly string[]): string {
+  const [first] = names;
+  if (names.length === 1 && first !== undefined) return `A ${first}`;
+  return names.join(' e ');
 }
 
-function verb(nomes: readonly string[]): string {
-  return nomes.length === 1 ? 'tem' : 'têm';
+function verb(names: readonly string[]): string {
+  return names.length === 1 ? 'tem' : 'têm';
 }
 
-function sentence(nomes: readonly string[], texto: string): string {
-  return `${subject(nomes)} ${verb(nomes)} ${texto}.`;
+function sentence(names: readonly string[], text: string): string {
+  return `${subject(names)} ${verb(names)} ${text}.`;
 }
 
 /**
  * Frase-resumo da comparação. Com menos de dois resultados prontos, não há o que comparar.
  */
-export function buildComparisonSummary(entradas: readonly ReadyEntry[]): string | null {
-  if (entradas.length < 2) return null;
-  const cet = bestBy(entradas, (entrada) => entrada.result.cetMonthly);
-  const total = bestBy(entradas, (entrada) => entrada.result.totalPaidCents);
+export function buildComparisonSummary(entries: readonly ReadyEntry[]): string | null {
+  if (entries.length < 2) return null;
+  const cet = bestBy(entries, (entry) => entry.result.cetMonthly);
+  const total = bestBy(entries, (entry) => entry.result.totalPaidCents);
   if (!cet || !total) return null;
 
-  const nomesCet = entradas.filter((entrada) => cet.ids.has(entrada.id)).map((e) => e.label);
-  const nomesTotal = entradas.filter((entrada) => total.ids.has(entrada.id)).map((e) => e.label);
-  const textoCet = `o menor CET (${formatPercent(cet.value)} ao mês)`;
-  const textoTotal = `o menor total pago (${formatMoney(total.value)})`;
+  const namesCet = entries.filter((entry) => cet.ids.has(entry.id)).map((e) => e.label);
+  const namesTotal = entries.filter((entry) => total.ids.has(entry.id)).map((e) => e.label);
+  const textCet = `o menor CET (${formatPercent(cet.value)} ao mês)`;
+  const textTotal = `o menor total pago (${formatMoney(total.value)})`;
 
-  const mesmos = [...cet.ids].sort().join() === [...total.ids].sort().join();
-  if (mesmos) return sentence(nomesCet, `${textoCet} e ${textoTotal}`);
-  return `${sentence(nomesCet, textoCet)} ${sentence(nomesTotal, textoTotal)}`;
+  const same = [...cet.ids].sort().join() === [...total.ids].sort().join();
+  if (same) return sentence(namesCet, `${textCet} e ${textTotal}`);
+  return `${sentence(namesCet, textCet)} ${sentence(namesTotal, textTotal)}`;
 }

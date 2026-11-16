@@ -15,7 +15,7 @@ vi.mock('../../shared/api/client', () => ({
 
 const analisar = vi.mocked(analyzeOffer);
 
-const entrada = offerInputSchema.parse({
+const entry = offerInputSchema.parse({
   releasedCents: 500_000,
   paymentCents: 50_000,
   installments: 12,
@@ -38,14 +38,14 @@ function analise(cetMonthly: number, totalPaidCents: number): OfferAnalysis {
   };
 }
 
-function montar() {
+function mountPage() {
   return mount(ComparePage, {
     global: { stubs: { RouterLink: RouterLinkStub } },
   });
 }
 
 /** Rótulos das colunas (índices) em que a linha da tabela traz o texto do selo. */
-function colunasComSelo(wrapper: ReturnType<typeof montar>, rotulo: string, selo: string) {
+function colunasComSelo(wrapper: ReturnType<typeof mountPage>, rotulo: string, selo: string) {
   const linha = wrapper.findAll('tbody tr').find((tr) => tr.find('th').text() === rotulo);
   return (linha?.findAll('td') ?? [])
     .map((td, indice) => (td.text().includes(selo) ? indice : -1))
@@ -64,7 +64,7 @@ describe('ComparePage', () => {
   });
 
   it('mostra o estado vazio com o formulário aberto e o link para Simular', () => {
-    const wrapper = montar();
+    const wrapper = mountPage();
 
     expect(wrapper.text()).toContain(
       'Adicione as ofertas que você recebeu para ver qual sai mais barata.',
@@ -80,10 +80,10 @@ describe('ComparePage', () => {
       .mockResolvedValueOnce(analise(0.021, 1_120_000))
       .mockResolvedValueOnce(analise(0.025, 1_100_000));
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
     expect(colunasComSelo(wrapper, 'CET ao mês', 'Menor CET')).toEqual([0]);
@@ -100,11 +100,11 @@ describe('ComparePage', () => {
       .mockResolvedValueOnce(analise(0.021, 1_120_000))
       .mockResolvedValueOnce(analise(0.03, 1_200_000));
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
     expect(colunasComSelo(wrapper, 'CET ao mês', 'Menor CET')).toEqual([0, 1]);
@@ -115,9 +115,9 @@ describe('ComparePage', () => {
 
   it('não mostra selo com um único cenário', async () => {
     analisar.mockResolvedValueOnce(analise(0.021, 1_120_000));
-    useComparison().add({ kind: 'offer', input: entrada });
+    useComparison().add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
     expect(wrapper.text()).not.toContain('Menor CET');
@@ -130,10 +130,10 @@ describe('ComparePage', () => {
       .mockResolvedValueOnce(analise(0.021, 1_120_000))
       .mockResolvedValueOnce(analise(0.025, 1_100_000));
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
     await wrapper.find('button[aria-label="Remover Oferta 1"]').trigger('click');
 
@@ -148,10 +148,10 @@ describe('ComparePage', () => {
       .mockResolvedValueOnce(analise(0.021, 1_120_000))
       .mockResolvedValueOnce(analise(0.025, 1_100_000));
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
     await wrapper.find('input[aria-label="Nome da oferta 2"]').setValue('Banco Sul');
 
@@ -164,10 +164,10 @@ describe('ComparePage', () => {
       .mockResolvedValueOnce(analise(0.021, 1_120_000))
       .mockRejectedValueOnce(new Error('falha de rede'));
     const { add } = useComparison();
-    add({ kind: 'offer', input: entrada });
-    add({ kind: 'offer', input: entrada });
+    add({ kind: 'offer', input: entry });
+    add({ kind: 'offer', input: entry });
 
-    const wrapper = montar();
+    const wrapper = mountPage();
     await flushPromises();
 
     expect(wrapper.text()).toContain('Não foi possível calcular esta oferta.');

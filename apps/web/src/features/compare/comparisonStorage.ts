@@ -14,9 +14,9 @@ export function loadScenarios(): Scenario[] {
 }
 
 /** Salva a comparação na aba. Falha silenciosa: a tela segue funcionando sem persistência. */
-export function saveScenarios(cenarios: readonly Scenario[]): void {
+export function saveScenarios(scenarios: readonly Scenario[]): void {
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cenarios));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(scenarios));
   } catch {
     /* sessionStorage indisponível: a comparação vale só nesta página. */
   }

@@ -9,17 +9,17 @@ export type ScenarioState =
   | { status: 'ready'; result: ComparedResult }
   | { status: 'error'; message: string };
 
-const MENSAGEM_GENERICA = 'Não foi possível calcular esta oferta.';
+const GENERIC_MESSAGE = 'Não foi possível calcular esta oferta.';
 
-async function fetchScenario(cenario: Scenario): Promise<ComparedResult> {
-  if (cenario.kind === 'simulation') {
-    return fromSimulation(cenario.input, await calculateSimulation(cenario.input));
+async function fetchScenario(scenario: Scenario): Promise<ComparedResult> {
+  if (scenario.kind === 'simulation') {
+    return fromSimulation(scenario.input, await calculateSimulation(scenario.input));
   }
-  return fromOffer(await analyzeOffer(cenario.input));
+  return fromOffer(await analyzeOffer(scenario.input));
 }
 
-function messageOf(erro: unknown): string {
-  return erro instanceof ApiError ? erro.problem.detail : MENSAGEM_GENERICA;
+function messageOf(error: unknown): string {
+  return error instanceof ApiError ? error.problem.detail : GENERIC_MESSAGE;
 }
 
 /**
@@ -29,33 +29,34 @@ function messageOf(erro: unknown): string {
 export function useScenarioResults(scenarios: ComputedRef<readonly Scenario[]>) {
   const states = reactive<Record<string, ScenarioState>>({});
 
-  async function load(cenario: Scenario): Promise<void> {
-    states[cenario.id] = { status: 'loading' };
+  async function load(scenario: Scenario): Promise<void> {
+    states[scenario.id] = { status: 'loading' };
     try {
-      const result = await fetchScenario(cenario);
-      if (cenario.id in states) states[cenario.id] = { status: 'ready', result };
-    } catch (erro) {
-      if (cenario.id in states) states[cenario.id] = { status: 'error', message: messageOf(erro) };
+      const result = await fetchScenario(scenario);
+      if (scenario.id in states) states[scenario.id] = { status: 'ready', result };
+    } catch (error) {
+      if (scenario.id in states)
+        states[scenario.id] = { status: 'error', message: messageOf(error) };
     }
   }
 
   watch(
     scenarios,
     (lista) => {
-      const ids = new Set(lista.map((cenario) => cenario.id));
+      const ids = new Set(lista.map((scenario) => scenario.id));
       for (const id of Object.keys(states)) {
         if (!ids.has(id)) Reflect.deleteProperty(states, id);
       }
-      for (const cenario of lista) {
-        if (!(cenario.id in states)) void load(cenario);
+      for (const scenario of lista) {
+        if (!(scenario.id in states)) void load(scenario);
       }
     },
     { immediate: true },
   );
 
   function retry(id: string): void {
-    const cenario = scenarios.value.find((item) => item.id === id);
-    if (cenario) void load(cenario);
+    const scenario = scenarios.value.find((item) => item.id === id);
+    if (scenario) void load(scenario);
   }
 
   return { states, retry };

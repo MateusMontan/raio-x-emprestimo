@@ -15,9 +15,9 @@ export interface ShareState {
   share: (input: SimulationInput) => Promise<void>;
 }
 
-const MENSAGEM_GENERICA = 'Algo deu errado. Tente de novo.';
-const MENSAGEM_COPIADO = `Link copiado. Ele vale por ${SHARE_TTL_DAYS} dias.`;
-const MENSAGEM_MANUAL = 'Não foi possível copiar sozinho. Selecione o link abaixo e copie.';
+const GENERIC_MESSAGE = 'Algo deu errado. Tente de novo.';
+const COPIED_MESSAGE = `Link copiado. Ele vale por ${SHARE_TTL_DAYS} dias.`;
+const MANUAL_MESSAGE = 'Não foi possível copiar sozinho. Selecione o link abaixo e copie.';
 
 /** Salva a simulação (F4) e leva o link para a área de transferência. */
 export function useShare(): ShareState {
@@ -33,18 +33,18 @@ export function useShare(): ShareState {
       const criado = await shareSimulation(input);
       link = criado.url;
       url.value = link;
-    } catch (erro) {
+    } catch (error) {
       status.value = 'error';
-      message.value = erro instanceof ApiError ? erro.problem.detail : MENSAGEM_GENERICA;
+      message.value = error instanceof ApiError ? error.problem.detail : GENERIC_MESSAGE;
       return;
     }
 
     if (await copyToClipboard(link)) {
       status.value = 'copied';
-      message.value = MENSAGEM_COPIADO;
+      message.value = COPIED_MESSAGE;
     } else {
       status.value = 'manual';
-      message.value = MENSAGEM_MANUAL;
+      message.value = MANUAL_MESSAGE;
     }
   }
 

@@ -7,9 +7,9 @@ import { useShare } from './useShare';
 vi.mock('../../shared/api/client', () => ({ shareSimulation: vi.fn() }));
 
 const compartilhar = vi.mocked(shareSimulation);
-const URL_CURTA = 'https://raiox.exemplo/s/abc123';
+const SHORT_URL = 'https://raiox.exemplo/s/abc123';
 
-function entrada() {
+function entry() {
   return simulationInputSchema.parse({
     amountCents: 1_000_000,
     monthlyRate: 0.02,
@@ -19,7 +19,7 @@ function entrada() {
   });
 }
 
-function definirClipboard(valor: unknown): void {
+function setClipboard(valor: unknown): void {
   Object.defineProperty(globalThis.navigator, 'clipboard', { value: valor, configurable: true });
 }
 
@@ -28,44 +28,44 @@ describe('useShare', () => {
     compartilhar.mockReset();
     compartilhar.mockResolvedValue({
       id: 'abc123',
-      url: URL_CURTA,
+      url: SHORT_URL,
       expiresAt: '2027-05-14T12:00:00.000Z',
     });
   });
 
   afterEach(() => {
-    definirClipboard(undefined);
+    setClipboard(undefined);
   });
 
   it('copia o link e avisa que vale por 180 dias', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
-    definirClipboard({ writeText });
+    setClipboard({ writeText });
     const compartilhamento = useShare();
 
-    await compartilhamento.share(entrada());
+    await compartilhamento.share(entry());
 
-    expect(writeText).toHaveBeenCalledWith(URL_CURTA);
+    expect(writeText).toHaveBeenCalledWith(SHORT_URL);
     expect(compartilhamento.status.value).toBe('copied');
     expect(compartilhamento.message.value).toBe('Link copiado. Ele vale por 180 dias.');
-    expect(compartilhamento.url.value).toBe(URL_CURTA);
+    expect(compartilhamento.url.value).toBe(SHORT_URL);
   });
 
   it('cai no modo manual quando não há área de transferência', async () => {
-    definirClipboard(undefined);
+    setClipboard(undefined);
     const compartilhamento = useShare();
 
-    await compartilhamento.share(entrada());
+    await compartilhamento.share(entry());
 
     expect(compartilhamento.status.value).toBe('manual');
-    expect(compartilhamento.url.value).toBe(URL_CURTA);
+    expect(compartilhamento.url.value).toBe(SHORT_URL);
     expect(compartilhamento.message.value).toContain('Selecione o link abaixo');
   });
 
   it('cai no modo manual quando a cópia falha', async () => {
-    definirClipboard({ writeText: vi.fn().mockRejectedValue(new Error('negado')) });
+    setClipboard({ writeText: vi.fn().mockRejectedValue(new Error('negado')) });
     const compartilhamento = useShare();
 
-    await compartilhamento.share(entrada());
+    await compartilhamento.share(entry());
 
     expect(compartilhamento.status.value).toBe('manual');
   });
@@ -81,7 +81,7 @@ describe('useShare', () => {
     );
     const compartilhamento = useShare();
 
-    await compartilhamento.share(entrada());
+    await compartilhamento.share(entry());
 
     expect(compartilhamento.status.value).toBe('error');
     expect(compartilhamento.message.value).toBe(

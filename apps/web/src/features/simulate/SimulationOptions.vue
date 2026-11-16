@@ -9,7 +9,7 @@ import type { FormErrors, SimulationFormState } from './simulationForm';
 defineProps<{ errors: FormErrors }>();
 const form = defineModel<SimulationFormState>('form', { required: true });
 
-const OPCOES_IOF: readonly { value: IofMode; label: string }[] = [
+const IOF_OPTIONS: readonly { value: IofMode; label: string }[] = [
   { value: 'FINANCED', label: 'Financiado' },
   { value: 'CASH', label: 'Pago à vista' },
   { value: 'NONE', label: 'Não calcular' },
@@ -54,7 +54,7 @@ const OPCOES_IOF: readonly { value: IofMode; label: string }[] = [
           v-model="form.iofMode"
           legend="IOF"
           name="iof"
-          :options="OPCOES_IOF"
+          :options="IOF_OPTIONS"
           aria-describedby="iof-dica"
         />
         <p id="iof-dica" class="hint">

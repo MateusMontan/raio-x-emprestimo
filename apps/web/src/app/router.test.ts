@@ -14,8 +14,8 @@ describe('roteamento', () => {
 
     expect(wrapper.find('h1').text()).toBe('Página não encontrada');
     expect(wrapper.text()).toContain('Esta página não existe ou o link expirou.');
-    const botao = wrapper.findAll('a').find((link) => link.text() === 'Nova simulação');
-    expect(botao?.attributes('href')).toBe('/');
+    const button = wrapper.findAll('a').find((link) => link.text() === 'Nova simulação');
+    expect(button?.attributes('href')).toBe('/');
   });
 
   it('atualiza o título do documento ao trocar de página', async () => {
