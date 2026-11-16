@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { simulationInputSchema } from '@raiox/contracts';
+import AddToComparison from '../compare/AddToComparison.vue';
 import ShareButton from '../share/ShareButton.vue';
 import Carne from './Carne.vue';
 import ResultSummary from './ResultSummary.vue';
@@ -46,6 +47,11 @@ onMounted(() => {
         <template v-if="sim.result.value">
           <ResultSummary :result="sim.result.value" />
           <ShareButton v-if="sim.resultInput.value" :input="sim.resultInput.value" />
+          <AddToComparison
+            v-if="sim.resultInput.value"
+            kind="simulation"
+            :input="sim.resultInput.value"
+          />
           <Carne :schedule="sim.result.value.schedule" :animate="sim.isFresh.value" />
         </template>
         <p v-else class="invite">

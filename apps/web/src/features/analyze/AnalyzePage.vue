@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import AddToComparison from '../compare/AddToComparison.vue';
 import OfferForm from './OfferForm.vue';
 import OfferResult from './OfferResult.vue';
 import { useOfferAnalysis } from './useOfferAnalysis';
@@ -26,7 +27,14 @@ const loading = computed(() => offer.status.value === 'loading');
       </div>
 
       <div class="result-col">
-        <OfferResult v-if="offer.result.value" :analysis="offer.result.value" />
+        <template v-if="offer.result.value">
+          <OfferResult :analysis="offer.result.value" />
+          <AddToComparison
+            v-if="offer.resultInput.value"
+            kind="offer"
+            :input="offer.resultInput.value"
+          />
+        </template>
         <p v-else class="invite">
           Informe o que você recebe, a parcela e o prazo para ver a taxa real da oferta.
         </p>
