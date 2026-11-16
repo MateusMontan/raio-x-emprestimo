@@ -6,6 +6,13 @@ const DAYS_PER_YEAR = 365;
 const LOWER_BOUND = -0.99999;
 const MAX_UPPER_BOUND = 1e18;
 
+interface Term {
+  /** Peso do fluxo em relação ao valor liberado. */
+  readonly weight: number;
+  /** Prazo em anos (base 365). */
+  readonly years: number;
+}
+
 /**
  * R4 — CET: taxa anual `r` tal que `FC0 = Σ FC_j / (1 + r)^((d_j − d_0) / 365)`.
  * Resolvido sobre fluxos normalizados por FC0 para que a tolerância seja relativa.
@@ -19,17 +26,17 @@ export class CetCalculator {
       throw new InvalidInputError('CET requer ao menos um fluxo de pagamento');
     }
 
-    const weights = flows.map((flow) => flow.amountCents / releasedCents);
-    const years = flows.map((flow) => flow.days / DAYS_PER_YEAR);
-    const residual = (rate: number): number => presentValue(weights, years, rate) - 1;
-    const slope = (rate: number): number => presentValueSlope(weights, years, rate);
-
+    const terms: Term[] = flows.map((flow) => ({
+      weight: flow.amountCents / releasedCents,
+      years: flow.days / DAYS_PER_YEAR,
+    }));
+    const residual = (rate: number): number => presentValue(terms, rate) - 1;
     const upper = findUpperBound(residual);
     const root = findRoot(residual, {
       lower: LOWER_BOUND,
       upper,
       initial: 0.3,
-      derivative: slope,
+      derivative: (rate) => presentValueSlope(terms, rate),
     });
     return {
       annual: root.value,
@@ -40,24 +47,18 @@ export class CetCalculator {
   }
 }
 
-function presentValue(weights: readonly number[], years: readonly number[], rate: number): number {
-  let total = 0;
-  for (let j = 0; j < weights.length; j++) {
-    total += (weights[j] ?? 0) * (1 + rate) ** -(years[j] ?? 0);
-  }
-  return total;
+function presentValue(terms: readonly Term[], rate: number): number {
+  return terms.reduce((total, term) => total + term.weight * (1 + rate) ** -term.years, 0);
 }
 
-function presentValueSlope(weights: readonly number[], years: readonly number[], rate: number): number {
-  let total = 0;
-  for (let j = 0; j < weights.length; j++) {
-    const t = years[j] ?? 0;
-    total -= (weights[j] ?? 0) * t * (1 + rate) ** -(t + 1);
-  }
-  return total;
+function presentValueSlope(terms: readonly Term[], rate: number): number {
+  return terms.reduce(
+    (total, term) => total - term.weight * term.years * (1 + rate) ** -(term.years + 1),
+    0,
+  );
 }
 
-/** Procura um limite superior com sinal negativo do resíduo (valor presente abaixo de 1). */
+/** Procura um limite superior com resíduo negativo (valor presente abaixo do liberado). */
 function findUpperBound(residual: (rate: number) => number): number {
   let upper = 1;
   while (residual(upper) > 0) {

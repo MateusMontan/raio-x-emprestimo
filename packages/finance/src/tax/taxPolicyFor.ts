@@ -4,7 +4,10 @@ import { TAX_POLICIES } from './taxPolicies';
 import type { TaxPolicy } from './TaxPolicy';
 
 /** Devolve a versão com `validFrom` mais recente que ainda não passou de `asOf`. */
-export function taxPolicyFor(asOf: IsoDate, policies: readonly TaxPolicy[] = TAX_POLICIES): TaxPolicy {
+export function taxPolicyFor(
+  asOf: IsoDate,
+  policies: readonly TaxPolicy[] = TAX_POLICIES,
+): TaxPolicy {
   let chosen: TaxPolicy | undefined;
   let chosenFrom: IsoDate | undefined;
   for (const policy of policies) {

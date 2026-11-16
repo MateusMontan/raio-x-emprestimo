@@ -40,7 +40,15 @@ describe('ImplicitRateSolver (R5)', () => {
     expect(() => solver.solve(1, 1, 0)).toThrow(InvalidInputError);
   });
 
+  it('encontra taxa muito alta quando a parcela é pequena em relação ao valor', () => {
+    expect(solver.solve(1, 100_000, 12)).toBeGreaterThan(100);
+  });
+
   it('rejeita valor liberado impossível de explicar com a parcela informada', () => {
     expect(() => solver.solve(1_000_000_000_000, 1, 2)).toThrow(NonConvergenceError);
+  });
+
+  it('rejeita parcela tão pequena que a taxa implícita sairia do limite numérico', () => {
+    expect(() => solver.solve(1, 1_000_000_000_000, 12)).toThrow('Parcela incompatível');
   });
 });

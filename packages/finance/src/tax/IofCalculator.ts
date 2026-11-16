@@ -1,7 +1,11 @@
 import type { Money } from '../money/Money';
 import type { TaxPolicy } from './TaxPolicy';
 
-/** R3 — IOF de crédito PF: diário sobre cada amortização e adicional sobre o principal. */
+/**
+ * R3 — IOF de crédito PF: diário sobre cada amortização e adicional sobre o principal.
+ * Os métodos `*Exact` devolvem centavos sem arredondar, para que a soma de várias
+ * parcelas seja arredondada uma única vez (ver `planSchedule`).
+ */
 export class IofCalculator {
   constructor(private readonly policy: TaxPolicy) {}
 
@@ -9,14 +13,14 @@ export class IofCalculator {
     return this.policy.id;
   }
 
-  /** IOF diário de uma parcela: amortização × alíquota diária × dias (limitados a `maxDays`). */
-  dailyFor(amortization: Money, daysFromRelease: number): Money {
+  /** IOF diário exato (centavos fracionados) de uma amortização, limitado a `maxDays`. */
+  dailyExact(amortization: Money, daysFromRelease: number): number {
     const days = Math.min(Math.max(daysFromRelease, 0), this.policy.maxDays);
-    return amortization.multiply(this.policy.dailyRate * days);
+    return amortization.cents * this.policy.dailyRate * days;
   }
 
-  /** IOF adicional, uma única vez sobre o principal. */
-  additionalFor(principal: Money): Money {
-    return principal.multiply(this.policy.additionalRate);
+  /** IOF adicional exato (centavos fracionados), uma única vez sobre o principal. */
+  additionalExact(principal: Money): number {
+    return principal.cents * this.policy.additionalRate;
   }
 }

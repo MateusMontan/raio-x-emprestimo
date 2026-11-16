@@ -22,3 +22,10 @@ export class NonConvergenceError extends DomainError {
     super('NON_CONVERGENCE', message);
   }
 }
+
+/** Nenhuma política de tributos vigente na data informada. */
+export class TaxPolicyNotFoundError extends DomainError {
+  constructor(date: string) {
+    super('TAX_POLICY_NOT_FOUND', `Nenhuma política de IOF vigente em ${date}`);
+  }
+}

@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { TaxPolicyNotFoundError } from '../errors';
 import { IsoDate } from '../date/IsoDate';
 import { TAX_POLICIES } from './taxPolicies';
+import { requireAt } from '../internal/requireAt';
 import { taxPolicyFor } from './taxPolicyFor';
 import type { TaxPolicy } from './TaxPolicy';
 
-const v1: TaxPolicy = { ...TAX_POLICIES[0]!, id: 'v1', validFrom: '2020-01-01' };
+const v1: TaxPolicy = { ...requireAt(TAX_POLICIES, 0), id: 'v1', validFrom: '2020-01-01' };
 const v2: TaxPolicy = { ...v1, id: 'v2', validFrom: '2025-06-01', additionalRate: 0.0045 };
 
 describe('taxPolicyFor', () => {

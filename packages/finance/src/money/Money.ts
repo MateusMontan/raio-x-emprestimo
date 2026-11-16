@@ -23,6 +23,11 @@ export class Money {
     return new Money(roundHalfEven(reais * 100));
   }
 
+  /** Cria a partir de um valor exato em centavos, arredondando uma única vez (half-even). */
+  static fromExactCents(exactCents: number): Money {
+    return new Money(roundHalfEven(exactCents));
+  }
+
   add(other: Money): Money {
     return new Money(this.cents + other.cents);
   }
