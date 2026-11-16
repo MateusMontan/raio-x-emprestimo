@@ -20,11 +20,14 @@ defineProps<{ row: ScheduleRow; total: number; index: number; animate: boolean }
       <p class="amount num">{{ formatMoney(row.payment) }}</p>
     </div>
     <CompositionBar
+      inline
+      hide-zero
       :interest-cents="row.interest"
       :principal-cents="row.principal"
       :charges-cents="row.charges"
-    />
-    <p class="balance num">Saldo depois: {{ formatMoney(row.balance) }}</p>
+    >
+      <p class="balance num">Saldo depois: {{ formatMoney(row.balance) }}</p>
+    </CompositionBar>
   </li>
 </template>
 
@@ -77,7 +80,9 @@ defineProps<{ row: ScheduleRow; total: number; index: number; animate: boolean }
 }
 
 .balance {
+  margin-left: auto;
   font-size: var(--text-sm);
+  white-space: nowrap;
 }
 
 .slip--enter {

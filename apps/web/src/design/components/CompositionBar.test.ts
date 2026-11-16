@@ -35,6 +35,39 @@ describe('CompositionBar', () => {
     expect(widths[1]).toContain('width: 57.14');
   });
 
+  it('omite encargos zerados da legenda e do aria-label com hideZero', () => {
+    const wrapper = mount(CompositionBar, {
+      props: { ...PROPS, chargesCents: 0, hideZero: true },
+    });
+
+    const rotulos = wrapper.findAll('.label').map((label) => label.text());
+    expect(rotulos).toEqual(['Juros', 'Amortização']);
+    const descricao = wrapper.find('[role="img"]').attributes('aria-label');
+    expect(descricao).not.toContain('encargos');
+    expect(descricao).toContain('juros');
+    expect(descricao).toContain('(33%)');
+    expect(descricao).toContain('(67%)');
+  });
+
+  it('mostra encargos com valor maior que zero mesmo com hideZero', () => {
+    const wrapper = mount(CompositionBar, { props: { ...PROPS, hideZero: true } });
+
+    const rotulos = wrapper.findAll('.label').map((label) => label.text());
+    expect(rotulos).toContain('Encargos');
+    expect(wrapper.find('[role="img"]').attributes('aria-label')).toContain('encargos');
+  });
+
+  it('mantém a legenda inline e renderiza o conteúdo do slot ao lado dela', () => {
+    const wrapper = mount(CompositionBar, {
+      props: { ...PROPS, inline: true },
+      slots: { default: '<p class="extra">Saldo depois: R$ 1,00</p>' },
+    });
+
+    expect(wrapper.classes()).toContain('composition--inline');
+    expect(wrapper.find('.legend-row .legend').exists()).toBe(true);
+    expect(wrapper.find('.legend-row .extra').text()).toBe('Saldo depois: R$ 1,00');
+  });
+
   it('não divide por zero quando todas as partes são zero', () => {
     const wrapper = mount(CompositionBar, {
       props: { interestCents: 0, principalCents: 0, chargesCents: 0 },
