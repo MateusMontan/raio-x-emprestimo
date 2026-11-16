@@ -33,6 +33,17 @@ describe('headers da API', () => {
     expect(res.headers.get('cache-control')).toBe('no-store');
   });
 
+  it('/api/docs usa a CSP que libera só o CDN do Scalar', async () => {
+    const { app } = createTestHarness();
+
+    const res = await get(app, '/api/docs');
+
+    expect(res.headers.get('content-security-policy')).toBe(
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.scalar.com; connect-src 'self'; frame-ancestors 'none'",
+    );
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+  });
+
   it('o 404 de /api também recebe os headers da API', async () => {
     const { app } = createTestHarness();
 

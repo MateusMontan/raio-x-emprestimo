@@ -1,10 +1,12 @@
 import { simulationIdSchema } from '@raiox/contracts';
-import type { ApiApp, ServicesResolver } from '../types';
+import { PAGE_SECURITY_HEADERS } from '../security/pageHeaders';
+import type { ApiApp, AssetsFetcher, ServicesResolver } from '../types';
 
 /**
- * GET /s/:id: devolve a página do front (SPA). Link válido → 200; qualquer outro caso → 404
+ * Páginas do front (SPA) em /s/*. Só `/s/:id` com link válido e existente → 200.
+ * Qualquer outro caminho em /s/ (vazio, id malformado, mais segmentos, barra final) → 404
  * com o mesmo HTML, para o front mostrar a página amigável de "expirado".
- * A resposta nunca vai para cache: o status muda quando o link expira.
+ * A resposta nunca vai para cache e leva os headers de segurança da página.
  */
 export function registerSharedPageRoute<B extends object>(
   app: ApiApp<B>,
@@ -16,13 +18,24 @@ export function registerSharedPageRoute<B extends object>(
     const exists =
       simulationIdSchema.safeParse(id).success &&
       (await services.checkSharedSimulation.execute(id));
+    return servePage(services.assets, c.req.url, exists);
+  });
 
-    const page = await services.assets.fetch(new Request(`${new URL(c.req.url).origin}/`));
-    const headers = new Headers(page.headers);
-    headers.set('Cache-Control', 'no-store');
-    return new Response(page.body, {
-      status: exists ? 200 : 404,
-      headers,
-    });
+  app.get('/s/*', (c) => servePage(resolve(c.env).assets, c.req.url, false));
+}
+
+async function servePage(
+  assets: AssetsFetcher,
+  requestUrl: string,
+  found: boolean,
+): Promise<Response> {
+  const page = await assets.fetch(new Request(`${new URL(requestUrl).origin}/`));
+  const headers = new Headers(page.headers);
+  for (const [name, value] of Object.entries(PAGE_SECURITY_HEADERS)) {
+    headers.set(name, value);
+  }
+  return new Response(page.body, {
+    status: found ? 200 : 404,
+    headers,
   });
 }

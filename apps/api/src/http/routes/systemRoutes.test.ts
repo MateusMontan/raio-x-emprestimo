@@ -35,14 +35,16 @@ describe('rotas de sistema', () => {
     );
   });
 
-  it('GET /api/docs responde 200 em HTML, sem CSP restritiva', async () => {
+  it('GET /api/docs responde 200 em HTML com a CSP específica do Scalar', async () => {
+    // Antes este teste afirmava ausência de CSP. Agora a página tem uma CSP própria, que só
+    // libera o CDN do Scalar (ver apiHeaders.test.ts para a string exata).
     const { app } = createTestHarness();
 
     const res = await get(app, '/api/docs');
 
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toContain('text/html');
-    expect(res.headers.get('content-security-policy')).toBeNull();
+    expect(res.headers.get('content-security-policy')).toContain('https://cdn.jsdelivr.net');
     expect(res.headers.get('x-content-type-options')).toBe('nosniff');
   });
 
