@@ -51,5 +51,21 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['apps/api/src/http/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/infrastructure/**'],
+              message: 'A camada HTTP depende de application e contracts, nunca de infraestrutura.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   prettier,
 );
