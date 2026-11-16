@@ -1,4 +1,4 @@
-import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils';
+import { flushPromises, mount, RouterLinkStub, type DOMWrapper } from '@vue/test-utils';
 import type { OfferAnalysis } from '@raiox/contracts';
 import { offerInputSchema } from '@raiox/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -42,6 +42,12 @@ function mountPage() {
   return mount(ComparePage, {
     global: { stubs: { RouterLink: RouterLinkStub } },
   });
+}
+
+/** Digita como o teclado: só dispara `input`, sem o `change` que o setValue do teste também dispara. */
+async function digitar(campo: DOMWrapper<HTMLInputElement>, texto: string) {
+  campo.element.value = texto;
+  await campo.trigger('input');
 }
 
 /** Rótulos das colunas (índices) em que a linha da tabela traz o texto do selo. */
@@ -179,6 +185,48 @@ describe('ComparePage', () => {
 
     expect(wrapper.text()).not.toContain('Não foi possível calcular esta oferta.');
     expect(colunasComSelo(wrapper, 'CET ao mês', 'Menor CET')).toEqual([0]);
+    wrapper.unmount();
+  });
+
+  it('deixa digitar espaços no meio do nome e confirma o nome ao sair do campo', async () => {
+    analisar.mockResolvedValueOnce(analise(0.021, 1_120_000));
+    useComparison().add({ kind: 'offer', input: entry });
+
+    const wrapper = mountPage();
+    await flushPromises();
+    const campo = wrapper.find<HTMLInputElement>('input[aria-label="Nome da oferta 1"]');
+
+    for (const texto of ['B', 'Ba', 'Banco', 'Banco ', 'Banco S', 'Banco Sul']) {
+      await digitar(campo, texto);
+      expect(campo.element.value).toBe(texto);
+    }
+    expect(useComparison().scenarios.value[0]?.label).toBe('Oferta 1');
+
+    await campo.trigger('change');
+
+    expect(useComparison().scenarios.value[0]?.label).toBe('Banco Sul');
+    expect(campo.element.value).toBe('Banco Sul');
+    wrapper.unmount();
+  });
+
+  it('confirma o nome com Enter e volta ao rótulo anterior quando o campo fica vazio', async () => {
+    analisar.mockResolvedValueOnce(analise(0.021, 1_120_000));
+    useComparison().add({ kind: 'offer', input: entry });
+
+    const wrapper = mountPage();
+    await flushPromises();
+    const campo = wrapper.find<HTMLInputElement>('input[aria-label="Nome da oferta 1"]');
+
+    await digitar(campo, '  Banco Norte  ');
+    await campo.trigger('keydown', { key: 'Enter' });
+    expect(useComparison().scenarios.value[0]?.label).toBe('Banco Norte');
+    expect(campo.element.value).toBe('Banco Norte');
+
+    await digitar(campo, '   ');
+    await campo.trigger('change');
+
+    expect(useComparison().scenarios.value[0]?.label).toBe('Banco Norte');
+    expect(campo.element.value).toBe('Banco Norte');
     wrapper.unmount();
   });
 });

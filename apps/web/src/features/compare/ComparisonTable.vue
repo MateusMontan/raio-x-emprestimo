@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Scenario } from './scenario';
+import { nameInputId, type Scenario } from './scenario';
 import { COMPARISON_ROWS, SEAL_TEXT, type SealKind } from './comparisonRows';
+import ScenarioNameInput from './ScenarioNameInput.vue';
 import type { ScenarioState } from './useScenarioResults';
 
 export interface ComparisonColumn {
@@ -24,10 +25,6 @@ function hasSeal(kind: SealKind | undefined, id: string): boolean {
   if (kind === undefined) return false;
   return props.seals[kind].has(id);
 }
-
-function onRename(id: string, event: Event): void {
-  if (event.target instanceof HTMLInputElement) emit('rename', id, event.target.value);
-}
 </script>
 
 <template>
@@ -41,13 +38,11 @@ function onRename(id: string, event: Event): void {
           <th scope="col"><span class="sr-only">Dado</span></th>
           <th v-for="(column, index) in columns" :key="column.scenario.id" scope="col">
             <div class="head">
-              <input
-                type="text"
-                class="name"
-                maxlength="60"
-                :aria-label="`Nome da oferta ${index + 1}`"
-                :value="column.scenario.label"
-                @input="onRename(column.scenario.id, $event)"
+              <ScenarioNameInput
+                :id="nameInputId(column.scenario.id)"
+                :label="column.scenario.label"
+                :accessible-name="`Nome da oferta ${index + 1}`"
+                @rename="(label) => emit('rename', column.scenario.id, label)"
               />
               <button
                 type="button"
@@ -137,19 +132,6 @@ tbody th {
   display: grid;
   gap: var(--space-2);
   justify-items: start;
-}
-
-.name {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: var(--target-min);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-control);
-  background: var(--slip);
-  color: var(--ink);
-  font: inherit;
-  font-weight: 700;
 }
 
 .remove,

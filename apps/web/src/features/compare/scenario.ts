@@ -8,6 +8,11 @@ import {
 
 export { MAX_COMPARE_SCENARIOS };
 
+/** Id do campo de nome de uma coluna; usado para levar o foco à coluna nova. */
+export function nameInputId(scenarioId: string): string {
+  return `nome-oferta-${scenarioId}`;
+}
+
 export type ScenarioKind = 'simulation' | 'offer';
 
 /** Cenário validado, ainda sem identidade na lista. */
