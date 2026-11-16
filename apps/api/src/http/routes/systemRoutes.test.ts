@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createTestHarness, get } from '../testing/harness';
+import { SCALAR_CDN_URL } from './systemRoutes';
 
 describe('rotas de sistema', () => {
   it('GET /api/health responde 200 com status ok', async () => {
@@ -46,6 +47,15 @@ describe('rotas de sistema', () => {
     expect(res.headers.get('content-type')).toContain('text/html');
     expect(res.headers.get('content-security-policy')).toContain('https://cdn.jsdelivr.net');
     expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+  });
+
+  it('GET /api/docs carrega o Scalar de uma versão fixa do CDN', async () => {
+    const { app } = createTestHarness();
+
+    const html = await (await get(app, '/api/docs')).text();
+
+    expect(html).toContain(SCALAR_CDN_URL);
+    expect(SCALAR_CDN_URL).toMatch(/@scalar\/api-reference@\d+\.\d+\.\d+$/);
   });
 
   it('responde 404 em problem+json para rota /api desconhecida', async () => {
