@@ -4,17 +4,18 @@ import { Miniflare } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { D1SimulationRepository } from './D1SimulationRepository';
 import type { SimulationRecord } from '../application/ports/types';
-import type { SimulationInput } from '@raiox/contracts';
+import { aSimulationInput } from '../application/testing/fixtures';
 
 const MIGRATION_PATH = fileURLToPath(
   new URL('../../migrations/0001_create_shared_simulations.sql', import.meta.url),
 );
 
-const input = {
-  amount: 50000,
-  termMonths: 36,
+/** Entrada válida no formato atual do contrato (SimulationInput), sem casts. */
+const input = aSimulationInput({
+  amountCents: 5_000_000,
+  installments: 36,
   monthlyRate: 0.0199,
-} as unknown as SimulationInput;
+});
 
 function recordOf(id: string, expiresAt = '2026-12-01T00:00:00.000Z'): SimulationRecord {
   return {
