@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
+import { simulationInputSchema } from '@raiox/contracts';
+import ShareButton from '../share/ShareButton.vue';
 import Carne from './Carne.vue';
 import ResultSummary from './ResultSummary.vue';
 import SimulationForm from './SimulationForm.vue';
@@ -7,6 +9,20 @@ import { useSimulation } from './useSimulation';
 
 const sim = useSimulation();
 const loading = computed(() => sim.status.value === 'loading');
+
+/* "Editar esta simulação" (tela /s/:id) leva a entrada em history.state. */
+function entradaRecebida(): unknown {
+  const estado: unknown = window.history.state;
+  if (typeof estado === 'object' && estado !== null && 'input' in estado) return estado.input;
+  return undefined;
+}
+
+onMounted(() => {
+  const lido = simulationInputSchema.safeParse(entradaRecebida());
+  if (!lido.success) return;
+  sim.load(lido.data);
+  void sim.submit();
+});
 </script>
 
 <template>
@@ -29,6 +45,7 @@ const loading = computed(() => sim.status.value === 'loading');
       <div class="result-col">
         <template v-if="sim.result.value">
           <ResultSummary :result="sim.result.value" />
+          <ShareButton v-if="sim.resultInput.value" :input="sim.resultInput.value" />
           <Carne :schedule="sim.result.value.schedule" :animate="sim.isFresh.value" />
         </template>
         <p v-else class="invite">

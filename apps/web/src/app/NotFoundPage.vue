@@ -1,9 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+withDefaults(defineProps<{ title?: string; message?: string }>(), {
+  title: 'Página não encontrada',
+  message: 'Esta página não existe ou o link expirou.',
+});
+</script>
 
 <template>
   <section class="not-found">
-    <h1 tabindex="-1">Página não encontrada</h1>
-    <p>Esta página não existe ou o link expirou.</p>
+    <h1 tabindex="-1">{{ title }}</h1>
+    <p>{{ message }}</p>
     <RouterLink class="action" to="/">Nova simulação</RouterLink>
   </section>
 </template>
