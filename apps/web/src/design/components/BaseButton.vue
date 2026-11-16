@@ -4,8 +4,9 @@ const props = withDefaults(
     variant?: 'primary' | 'secondary';
     type?: 'button' | 'submit';
     loading?: boolean;
+    loadingLabel?: string;
   }>(),
-  { variant: 'primary', type: 'button', loading: false },
+  { variant: 'primary', type: 'button', loading: false, loadingLabel: 'Calculando…' },
 );
 const emit = defineEmits<{ click: [event: MouseEvent] }>();
 
@@ -25,7 +26,12 @@ function onClick(event: MouseEvent): void {
     :aria-busy="loading ? 'true' : undefined"
     @click="onClick"
   >
-    <slot />
+    <template v-if="loading">
+      <!-- O rótulo visível fica escondido do leitor; o nome acessível vira o loadingLabel. -->
+      <span aria-hidden="true"><slot /></span>
+      <span class="visually-hidden">{{ loadingLabel }}</span>
+    </template>
+    <slot v-else />
   </button>
 </template>
 

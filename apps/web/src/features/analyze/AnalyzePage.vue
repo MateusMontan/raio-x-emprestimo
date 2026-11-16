@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import LiveStatus from '../../design/components/LiveStatus.vue';
 import AddToComparison from '../compare/AddToComparison.vue';
 import OfferForm from './OfferForm.vue';
 import OfferResult from './OfferResult.vue';
+import { offerAnnouncement } from './offerAnnouncement';
 import { useOfferAnalysis } from './useOfferAnalysis';
 
 const offer = useOfferAnalysis();
 const loading = computed(() => offer.status.value === 'loading');
+const announcement = computed(() => offerAnnouncement(offer.status.value, offer.result.value));
 </script>
 
 <template>
@@ -27,6 +30,7 @@ const loading = computed(() => offer.status.value === 'loading');
       </div>
 
       <div class="result-col">
+        <LiveStatus :text="announcement" />
         <template v-if="offer.result.value">
           <OfferResult :analysis="offer.result.value" />
           <AddToComparison

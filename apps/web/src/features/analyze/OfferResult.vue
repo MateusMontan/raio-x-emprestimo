@@ -8,12 +8,10 @@ defineProps<{ analysis: OfferAnalysis }>();
 
 <template>
   <section class="offer-result" aria-label="Resultado do raio-X">
-    <div aria-live="polite" aria-atomic="true">
-      <p class="sentence">
-        Você recebe <strong>{{ formatMoney(analysis.releasedCents) }}</strong> e devolve
-        <strong>{{ formatMoney(analysis.totalPaidCents) }}</strong>.
-      </p>
-    </div>
+    <p class="sentence">
+      Você recebe <strong>{{ formatMoney(analysis.releasedCents) }}</strong> e devolve
+      <strong>{{ formatMoney(analysis.totalPaidCents) }}</strong>.
+    </p>
 
     <p class="rate">
       Os juros embutidos são de {{ formatPercent(analysis.impliedMonthlyRate) }} ao mês ({{

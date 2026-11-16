@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { simulationInputSchema } from '@raiox/contracts';
+import LiveStatus from '../../design/components/LiveStatus.vue';
 import AddToComparison from '../compare/AddToComparison.vue';
 import ShareButton from '../share/ShareButton.vue';
 import Carne from './Carne.vue';
 import ResultSummary from './ResultSummary.vue';
 import SimulationForm from './SimulationForm.vue';
+import { simulationAnnouncement } from './simulationAnnouncement';
 import { useSimulation } from './useSimulation';
 
 const sim = useSimulation();
 const loading = computed(() => sim.status.value === 'loading');
+const announcement = computed(() => simulationAnnouncement(sim.status.value, sim.result.value));
 
 /* "Editar esta simulação" (tela /s/:id) leva a entrada em history.state. */
 function receivedInput(): unknown {
@@ -44,6 +47,7 @@ onMounted(() => {
       </div>
 
       <div class="result-col">
+        <LiveStatus :text="announcement" />
         <template v-if="sim.result.value">
           <ResultSummary :result="sim.result.value" />
           <ShareButton v-if="sim.resultInput.value" :input="sim.resultInput.value" />

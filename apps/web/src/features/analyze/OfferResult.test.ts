@@ -55,13 +55,4 @@ describe('OfferResult', () => {
 
     expect(normalized(wrapper.find('.advice').text())).toContain('Peça o CET por escrito.');
   });
-
-  it('anuncia a frase em região aria-live educada e atômica', () => {
-    const wrapper = mount(OfferResult, { props: { analysis: ANALYSIS } });
-
-    const region = wrapper.find('[aria-live]');
-    expect(region.attributes('aria-live')).toBe('polite');
-    expect(region.attributes('aria-atomic')).toBe('true');
-    expect(region.text()).toContain('Você recebe');
-  });
 });

@@ -61,13 +61,4 @@ describe('ResultSummary', () => {
       { termo: 'Última parcela', valor: formatMoney(94_555) },
     ]);
   });
-
-  it('anuncia a frase em região aria-live educada', () => {
-    const wrapper = mount(ResultSummary, { props: { result: RESULT } });
-
-    const region = wrapper.find('[aria-live]');
-    expect(region.attributes('aria-live')).toBe('polite');
-    expect(region.attributes('aria-atomic')).toBe('true');
-    expect(region.find('.sentence').exists()).toBe(true);
-  });
 });

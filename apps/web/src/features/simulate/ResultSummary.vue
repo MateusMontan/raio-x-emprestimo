@@ -12,12 +12,10 @@ const last = computed(() => props.result.schedule.at(-1));
 
 <template>
   <section class="summary" aria-label="Resultado da simulação">
-    <div aria-live="polite" aria-atomic="true">
-      <p class="sentence">
-        Você recebe <strong>{{ formatMoney(result.releasedCents) }}</strong> e devolve
-        <strong>{{ formatMoney(result.totals.paidCents) }}</strong>.
-      </p>
-    </div>
+    <p class="sentence">
+      Você recebe <strong>{{ formatMoney(result.releasedCents) }}</strong> e devolve
+      <strong>{{ formatMoney(result.totals.paidCents) }}</strong>.
+    </p>
 
     <dl class="cet">
       <div>
