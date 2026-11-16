@@ -1,5 +1,6 @@
 import type { Money } from '../money/Money';
 import type { Rate } from '../rate/Rate';
+import { assertFeasibleSchedule } from './assertFeasibleSchedule';
 import { assertInstallments } from './assertInstallments';
 import type { AmortizationStrategy, Installment } from './types';
 
@@ -24,6 +25,7 @@ export class SacSchedule implements AmortizationStrategy {
         balance,
       });
     }
+    assertFeasibleSchedule(rows);
     return rows;
   }
 }
