@@ -60,8 +60,8 @@ async function onSubmit(): Promise<void> {
       legend="Sistema"
       name="sistema"
       :options="SYSTEM_OPTIONS"
+      :error="errors.system"
     />
-    <p v-if="errors.system" class="error">{{ errors.system }}</p>
 
     <SimulationOptions v-model:form="form" :errors="errors" />
 
@@ -74,10 +74,5 @@ async function onSubmit(): Promise<void> {
   display: grid;
   gap: var(--space-5);
   align-content: start;
-}
-
-.error {
-  color: var(--interest);
-  font-weight: 700;
 }
 </style>

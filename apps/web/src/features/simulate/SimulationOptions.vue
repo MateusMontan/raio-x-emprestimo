@@ -55,13 +55,13 @@ const IOF_OPTIONS: readonly { value: IofMode; label: string }[] = [
           legend="IOF"
           name="iof"
           :options="IOF_OPTIONS"
-          aria-describedby="iof-dica"
+          described-by="iof-dica"
+          :error="errors.iofMode"
         />
         <p id="iof-dica" class="hint">
           Financiado: o IOF entra no valor emprestado. Pago à vista: o IOF sai do valor que você
           recebe.
         </p>
-        <p v-if="errors.iofMode" class="error">{{ errors.iofMode }}</p>
       </div>
     </div>
   </details>
@@ -86,10 +86,5 @@ const IOF_OPTIONS: readonly { value: IofMode; label: string }[] = [
 
 .hint {
   font-size: var(--text-sm);
-}
-
-.error {
-  color: var(--interest);
-  font-weight: 700;
 }
 </style>

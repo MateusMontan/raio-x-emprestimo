@@ -1,18 +1,36 @@
 <script setup lang="ts" generic="T extends string">
+import { computed } from 'vue';
+
 /*
  * Grupo de rádio com aparência de segmentos. O navegador já move a seleção
  * com as setas dentro do mesmo `name`, e o fieldset dá o nome do grupo.
+ * Dica e erro ficam ligados ao grupo por aria-describedby; o erro também
+ * marca o grupo com aria-invalid, como os demais campos.
  */
-defineProps<{
+const props = defineProps<{
   legend: string;
   name: string;
   options: readonly { value: T; label: string }[];
+  describedBy?: string | undefined;
+  error?: string | null | undefined;
 }>();
 const model = defineModel<T>({ required: true });
+
+const errorId = computed(() => `${props.name}-erro`);
+const describedByIds = computed(() => {
+  const ids: string[] = [];
+  if (props.describedBy) ids.push(props.describedBy);
+  if (props.error) ids.push(errorId.value);
+  return ids.length > 0 ? ids.join(' ') : undefined;
+});
 </script>
 
 <template>
-  <fieldset class="segmented">
+  <fieldset
+    class="segmented"
+    :aria-describedby="describedByIds"
+    :aria-invalid="error ? 'true' : undefined"
+  >
     <legend class="legend">{{ legend }}</legend>
     <div class="options">
       <label v-for="option in options" :key="option.value" class="option">
@@ -20,6 +38,7 @@ const model = defineModel<T>({ required: true });
         <span class="segment">{{ option.label }}</span>
       </label>
     </div>
+    <p v-if="error" :id="errorId" class="error">{{ error }}</p>
   </fieldset>
 </template>
 
@@ -76,5 +95,11 @@ const model = defineModel<T>({ required: true });
 .option input:focus-visible + .segment {
   outline: 3px solid var(--ink);
   outline-offset: 2px;
+}
+
+.error {
+  margin-top: var(--space-2);
+  color: var(--interest);
+  font-weight: 700;
 }
 </style>
