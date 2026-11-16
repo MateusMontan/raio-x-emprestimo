@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BaseButton from '../../design/components/BaseButton.vue';
 import Carne from '../simulate/Carne.vue';
@@ -12,11 +12,21 @@ const route = useRoute();
 const router = useRouter();
 
 const sim = useSharedSimulation(() => String(route.params.id));
+const root = ref<HTMLElement | null>(null);
 
 watch(
   () => route.params.id,
   () => void sim.load(),
   { immediate: true },
+);
+
+/* Terminou de carregar (também na carga direta de /s/:id): o foco vai ao título. */
+watch(
+  () => sim.status.value,
+  (status) => {
+    if (status !== 'loading') root.value?.querySelector<HTMLElement>('h1')?.focus();
+  },
+  { flush: 'post' },
 );
 
 function editar(): void {
@@ -30,8 +40,8 @@ function newSimulation(): void {
 </script>
 
 <template>
-  <section class="shared">
-    <p v-if="sim.status.value === 'loading'">Carregando a simulação…</p>
+  <section ref="root" class="shared">
+    <p v-if="sim.status.value === 'loading'" role="status">Carregando a simulação…</p>
 
     <NotFoundPage
       v-else-if="sim.status.value === 'not-found'"

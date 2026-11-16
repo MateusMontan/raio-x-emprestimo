@@ -87,4 +87,28 @@ describe('SharePage', () => {
     expect(buscar).toHaveBeenCalledTimes(2);
     expect(wrapper.find('h1').text()).toBe('Simulação compartilhada');
   });
+
+  it('anuncia o carregamento em região de status', async () => {
+    buscar.mockReturnValue(new Promise(() => {}));
+
+    const { wrapper } = await mountPage();
+
+    expect(wrapper.find('[role="status"]').text()).toBe('Carregando a simulação…');
+  });
+
+  it('leva o foco ao título quando a simulação termina de carregar', async () => {
+    buscar.mockResolvedValue(SHARED);
+    const router = createAppRouter(createMemoryHistory());
+    await router.push('/s/abc123');
+    await router.isReady();
+
+    const wrapper = mount(SharePage, {
+      attachTo: document.body,
+      global: { plugins: [router], stubs: { ResultSummary: true, Carne: true } },
+    });
+    await flushPromises();
+
+    expect(document.activeElement).toBe(wrapper.find('h1').element);
+    wrapper.unmount();
+  });
 });
