@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Formatação, lint, tipos, testes e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Sem versão fixa: lê o campo packageManager do package.json da raiz.
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v6
+
+      # Precisa vir depois do pnpm, para o cache de pnpm funcionar.
+      - name: Configurar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Verificar formatação
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      # O Worker serve ../web/dist como assets, então o build da web vem antes do dry-run.
+      - name: Build da web
+        run: pnpm --filter @raiox/web build
+
+      # Valida o bundle do Worker sem publicar e sem credenciais.
+      - name: Dry-run do bundle do Worker
+        run: pnpm --filter @raiox/api exec wrangler deploy --dry-run --outdir .wrangler/dry-run
