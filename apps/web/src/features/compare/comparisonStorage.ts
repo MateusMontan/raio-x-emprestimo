@@ -5,9 +5,9 @@ const STORAGE_KEY = 'raiox:comparison';
 /** Lê a comparação salva na aba. Sem sessionStorage (ou JSON ruim), começa vazia. */
 export function loadScenarios(): Scenario[] {
   try {
-    const bruto = window.sessionStorage.getItem(STORAGE_KEY);
-    if (bruto === null) return [];
-    return parseStoredScenarios(JSON.parse(bruto));
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    if (raw === null) return [];
+    return parseStoredScenarios(JSON.parse(raw));
   } catch {
     return [];
   }

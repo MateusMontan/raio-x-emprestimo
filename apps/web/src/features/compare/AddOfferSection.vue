@@ -29,8 +29,8 @@ function onSubmit(): void {
   if (!parsed.success) {
     const byField: Partial<Record<OfferField, string>> = {};
     for (const issue of parsed.error.issues) {
-      const campo = String(issue.path[0] ?? '');
-      if (isOfferField(campo)) byField[campo] ??= issue.message;
+      const field = String(issue.path[0] ?? '');
+      if (isOfferField(field)) byField[field] ??= issue.message;
     }
     errors.value = byField;
     return;

@@ -32,10 +32,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /** Revalida o que veio do sessionStorage e descarta os itens inválidos. */
-export function parseStoredScenarios(bruto: unknown): Scenario[] {
-  if (!Array.isArray(bruto)) return [];
+export function parseStoredScenarios(raw: unknown): Scenario[] {
+  if (!Array.isArray(raw)) return [];
   const scenarios: Scenario[] = [];
-  for (const item of bruto) {
+  for (const item of raw) {
     if (scenarios.length >= MAX_COMPARE_SCENARIOS) break;
     if (!isRecord(item)) continue;
     const { id, label, kind, input } = item;
