@@ -89,7 +89,7 @@ describe('ComparePage', () => {
     expect(colunasComSelo(wrapper, 'CET ao mês', 'Menor CET')).toEqual([0]);
     expect(colunasComSelo(wrapper, 'Total pago', 'Menor total pago')).toEqual([1]);
     expect(wrapper.find('.summary').text()).toBe(
-      'A Oferta 1 tem o menor CET (2,10% ao mês). A Oferta 2 tem o menor total pago (R$ 11.000,00).',
+      'Oferta 1 tem o menor CET (2,10% ao mês). Oferta 2 tem o menor total pago (R$ 11.000,00).',
     );
     wrapper.unmount();
   });
@@ -155,7 +155,7 @@ describe('ComparePage', () => {
     await flushPromises();
     await wrapper.find('input[aria-label="Nome da oferta 2"]').setValue('Banco Sul');
 
-    expect(wrapper.find('.summary').text()).toContain('A Banco Sul tem o menor total pago');
+    expect(wrapper.find('.summary').text()).toContain('Banco Sul tem o menor total pago');
     wrapper.unmount();
   });
 

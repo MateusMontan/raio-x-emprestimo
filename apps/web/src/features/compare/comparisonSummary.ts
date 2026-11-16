@@ -9,18 +9,17 @@ export interface ReadyEntry {
   result: ComparedResult;
 }
 
-function subject(names: readonly string[]): string {
-  const [first] = names;
-  if (names.length === 1 && first !== undefined) return `A ${first}`;
-  return names.join(' e ');
+/** Sem artigo: o rótulo pode ser qualquer texto ("Oferta 2", "Simulação"). */
+function subject(labels: readonly string[]): string {
+  return labels.join(' e ');
 }
 
-function verb(names: readonly string[]): string {
-  return names.length === 1 ? 'tem' : 'têm';
+function verb(labels: readonly string[]): string {
+  return labels.length === 1 ? 'tem' : 'têm';
 }
 
-function sentence(names: readonly string[], text: string): string {
-  return `${subject(names)} ${verb(names)} ${text}.`;
+function sentence(labels: readonly string[], text: string): string {
+  return `${subject(labels)} ${verb(labels)} ${text}.`;
 }
 
 /**
@@ -32,12 +31,14 @@ export function buildComparisonSummary(entries: readonly ReadyEntry[]): string |
   const total = bestBy(entries, (entry) => entry.result.totalPaidCents);
   if (!cet || !total) return null;
 
-  const namesCet = entries.filter((entry) => cet.ids.has(entry.id)).map((e) => e.label);
-  const namesTotal = entries.filter((entry) => total.ids.has(entry.id)).map((e) => e.label);
-  const textCet = `o menor CET (${formatPercent(cet.value)} ao mês)`;
-  const textTotal = `o menor total pago (${formatMoney(total.value)})`;
+  const cetLabels = entries.filter((entry) => cet.ids.has(entry.id)).map((entry) => entry.label);
+  const totalLabels = entries
+    .filter((entry) => total.ids.has(entry.id))
+    .map((entry) => entry.label);
+  const cetText = `o menor CET (${formatPercent(cet.value)} ao mês)`;
+  const totalText = `o menor total pago (${formatMoney(total.value)})`;
 
   const same = [...cet.ids].sort().join() === [...total.ids].sort().join();
-  if (same) return sentence(namesCet, `${textCet} e ${textTotal}`);
-  return `${sentence(namesCet, textCet)} ${sentence(namesTotal, textTotal)}`;
+  if (same) return sentence(cetLabels, `${cetText} e ${totalText}`);
+  return `${sentence(cetLabels, cetText)} ${sentence(totalLabels, totalText)}`;
 }
