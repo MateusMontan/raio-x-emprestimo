@@ -13,7 +13,8 @@ export const TAX_POLICIES: readonly TaxPolicy[] = [
     additionalRate: 0.0038,
     maxDays: 365,
     legalReference: {
-      title: 'Decreto nº 6.306/2007, art. 7º (alíquotas PF vigentes desde o fim do aumento temporário do Decreto nº 10.797/2021)',
+      title:
+        'Decreto nº 6.306/2007, art. 7º (alíquotas PF vigentes desde o fim do aumento temporário do Decreto nº 10.797/2021)',
       url: 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm',
     },
   },
