@@ -35,11 +35,18 @@ const policy: TaxPolicy = {
 };
 
 describe('solveFinancedPlan (R3, IOF financiado)', () => {
-  it('converge com alíquotas reais e o principal cobre valor + IOF ao centavo', () => {
+  it('converge com alíquotas reais e o principal é valor + IOF exatamente (diferença 0)', () => {
     const amount = Money.fromCents(1_000_000);
     const plan = solveFinancedPlan(contextWith(policy), amount);
     const iof = plan.dailyIof.add(plan.additionalIof);
-    expect(Math.abs(plan.principal.subtract(amount).subtract(iof).cents)).toBeLessThanOrEqual(1);
+    expect(plan.principal.subtract(amount).subtract(iof).cents).toBe(0);
+  });
+
+  it('devolve o plano calculado sobre o principal que satisfaz a igualdade', () => {
+    const amount = Money.fromCents(1_000_000);
+    const plan = solveFinancedPlan(contextWith(policy), amount);
+    const iof = plan.dailyIof.add(plan.additionalIof);
+    expect(amount.add(iof).equals(plan.principal)).toBe(true);
   });
 
   it('lança NonConvergenceError quando o IOF não estabiliza (alíquota absurda)', () => {

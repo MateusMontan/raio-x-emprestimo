@@ -69,10 +69,12 @@ describe('simulateLoan — IOF e liberado', () => {
     expect(result.financedPrincipalCents).toBeGreaterThan(1_000_000);
   });
 
-  it('principal financiado é valor + IOF com diferença de no máximo 1 centavo (ponto fixo)', () => {
+  it('principal financiado é valor + IOF, ou difere em 1 centavo quando cai em ciclo (financing.ts)', () => {
+    // Este caso (60 parcelas a 2% a.m.) cai em ciclo de dois valores: a diferença é de 1 centavo,
+    // não 0. Os demais casos do grid convergem exatamente (ver financingConvergence.test.ts).
     const result = simulateLoan({ ...base, iofMode: 'FINANCED', installments: 60 });
     const gap = result.financedPrincipalCents - result.amountCents - result.iof.totalCents;
-    expect(Math.abs(gap)).toBeLessThanOrEqual(1);
+    expect(gap).toBe(1);
   });
 
   it('IOF à vista é descontado do liberado e o principal fica igual ao valor', () => {
