@@ -1,4 +1,5 @@
 import { InvalidInputError } from '../errors';
+import { annuityFactor } from '../internal/annuity';
 import { findRoot } from '../solver/findRoot';
 
 const MAX_UPPER_BOUND = 1e6;
@@ -25,15 +26,6 @@ export class ImplicitRateSolver {
     });
     return root.value;
   }
-}
-
-/**
- * Fator de anuidade `a(i) = (1 − (1 + i)^−n) / i`. Escrito com expm1/log1p para
- * manter precisão perto de i = 0, onde o limite é `n`.
- */
-function annuityFactor(rate: number, installments: number): number {
-  if (Math.abs(rate) < 1e-12) return installments;
-  return -Math.expm1(-installments * Math.log1p(rate)) / rate;
 }
 
 /** Procura um limite superior com resíduo negativo (a(i) abaixo do alvo). */

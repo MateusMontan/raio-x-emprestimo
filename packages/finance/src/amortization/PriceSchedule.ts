@@ -1,3 +1,4 @@
+import { annuityFactor } from '../internal/annuity';
 import type { Money } from '../money/Money';
 import type { Rate } from '../rate/Rate';
 import { assertFeasibleSchedule } from './assertFeasibleSchedule';
@@ -34,7 +35,5 @@ function fixedPayment(principal: Money, rate: Rate, installments: number): Money
   if (rate.isZero()) {
     return principal.divide(installments);
   }
-  const i = rate.monthly;
-  const factor = i / (1 - (1 + i) ** -installments);
-  return principal.multiply(factor);
+  return principal.divide(annuityFactor(rate.monthly, installments));
 }
