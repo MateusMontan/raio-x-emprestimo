@@ -1,0 +1,51 @@
+/*
+ * Tokens do design system "Carnê" (docs/DESIGN.md).
+ * Globais de propósito: componentes usam estilo scoped e leem só estes nomes.
+ */
+:root {
+  /* Cores */
+  --paper: #e9f0ec; /* papel de segurança: fundo da página */
+  --slip: #f8fbf9; /* lâminas do carnê e campos */
+  --ink: #1b2a41; /* texto e traços principais */
+  --interest: #b1123b; /* juros */
+  --principal: #2e6a57; /* amortização */
+  --charges: #6a4c9c; /* IOF, tarifas e seguro */
+  --rule: #a9bdb4; /* picote, bordas e divisórias */
+
+  /* Tipografia: uma família, escala modular de 1,25 */
+  --font-body: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 20px;
+  --text-xl: 25px;
+  --text-2xl: 31px;
+  --text-3xl: 39px;
+
+  /* Espaçamentos */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Raios: a hierarquia é o valor */
+  --radius-slip: 2px;
+  --radius-control: 6px;
+
+  /* Grade e medidas */
+  --grid-columns: 12;
+  --gutter: 24px;
+  --measure: 68ch;
+  --target-min: 44px;
+
+  /* Elevação: só o picote entre lâminas */
+  --shadow-stub: 0 1px 0 var(--rule);
+
+  /* Movimento: um único momento (carnê) */
+  --duration-carne: 240ms;
+  --stagger-carne: 60ms;
+  --ease-carne: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
