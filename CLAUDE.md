@@ -5,11 +5,12 @@ Front-end: leia também `docs/DESIGN.md` e use a skill `frontend-design`.
 
 ## Estado atual
 - [x] Scaffold do monorepo (pnpm) e `@raiox/finance` (117 testes, cobertura de 99%)
-- [ ] `packages/contracts`: schemas Zod (R7) compartilhados
-- [ ] `apps/api`: Hono + D1, casos de uso, OpenAPI e Scalar, Cron de limpeza
-- [ ] `apps/web`: Vue 3 com o design system "Carnê"
-- [ ] CI/CD: `.github/workflows/ci.yml` e `deploy.yml` (secrets `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` já estão no repositório)
-- [ ] README de portfólio (badges, demo, arquitetura, decisões, como rodar)
+- [x] `packages/contracts`: schemas Zod (R7) compartilhados
+- [x] `apps/api`: Hono + D1, casos de uso, OpenAPI e Scalar, Cron de limpeza
+- [x] `apps/web`: Vue 3 com o design system "Carnê"
+- [x] CI/CD: `.github/workflows/ci.yml` e `deploy.yml`. O `verify` passa no GitHub.
+- [ ] Primeiro deploy: o job falha porque o secret `CLOUDFLARE_API_TOKEN` chega vazio. Criar `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit e D1: Edit) e `CLOUDFLARE_ACCOUNT_ID` como _repository secrets_ do Actions e rodar o deploy de novo.
+- [x] README de portfólio e `docs/SDD.md`. Falta só trocar o aviso do topo do README pela URL da demo depois do primeiro deploy.
 
 ## Infra já criada
 - Banco D1 `raiox-db`, id `5832dfed-df38-4666-8082-f7f67f555446` (região ENAM). Use esse id no `wrangler.jsonc`.
