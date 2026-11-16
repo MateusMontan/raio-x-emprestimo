@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { formatMoneyInput, parseMoney } from '../../shared/format';
-import type { FieldAttrs } from '../fieldAttrs';
+import { joinIds, type FieldAttrs } from '../fieldAttrs';
 import { useFormattedInput } from '../useFormattedInput';
 
 /** Valor em centavos inteiros. Digitado como "10.000,00". */
 const props = defineProps<FieldAttrs & { modelValue: number | null }>();
 const emit = defineEmits<{ 'update:modelValue': [value: number | null] }>();
+
+const unitId = computed(() => `${props.id}-unidade`);
+const describedBy = computed(() => joinIds(props.describedBy, unitId.value));
 
 const { text, onInput, onBlur } = useFormattedInput<number>({
   value: () => props.modelValue,
@@ -17,7 +21,7 @@ const { text, onInput, onBlur } = useFormattedInput<number>({
 
 <template>
   <div class="control money">
-    <span class="prefix" aria-hidden="true">R$</span>
+    <span :id="unitId" class="prefix">R$</span>
     <input
       :id="id"
       :value="text"

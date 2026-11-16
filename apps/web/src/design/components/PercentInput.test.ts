@@ -41,4 +41,14 @@ describe('PercentInput', () => {
     expect(wrapper.find('input').element.value).toBe('2,92');
     expect(wrapper.find('.suffix').text()).toBe('%');
   });
+
+  it('lê o % como descrição do campo, sem escondê-lo', () => {
+    const wrapper = mount(PercentInput, {
+      props: { id: 'taxa', modelValue: 0.02, describedBy: 'taxa-dica' },
+    });
+
+    expect(wrapper.find('.suffix').attributes('aria-hidden')).toBeUndefined();
+    expect(wrapper.find('input').attributes('aria-describedby')).toBe('taxa-dica taxa-unidade');
+    expect(wrapper.find('#taxa-unidade').text()).toBe('%');
+  });
 });

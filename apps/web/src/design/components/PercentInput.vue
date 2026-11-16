@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { formatPercentInput, parsePercent } from '../../shared/format';
-import type { FieldAttrs } from '../fieldAttrs';
+import { joinIds, type FieldAttrs } from '../fieldAttrs';
 import { useFormattedInput } from '../useFormattedInput';
 
 /** Fração decimal (0,025 = 2,5%). Digitada como "2,5". */
 const props = defineProps<FieldAttrs & { modelValue: number | null }>();
 const emit = defineEmits<{ 'update:modelValue': [value: number | null] }>();
+
+const unitId = computed(() => `${props.id}-unidade`);
+const describedBy = computed(() => joinIds(props.describedBy, unitId.value));
 
 const { text, onInput, onBlur } = useFormattedInput<number>({
   value: () => props.modelValue,
@@ -28,7 +32,7 @@ const { text, onInput, onBlur } = useFormattedInput<number>({
       @input="onInput"
       @blur="onBlur"
     />
-    <span class="suffix" aria-hidden="true">%</span>
+    <span :id="unitId" class="suffix">%</span>
   </div>
 </template>
 

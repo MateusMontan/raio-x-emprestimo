@@ -41,13 +41,15 @@ describe('MoneyInput', () => {
     expect(wrapper.find('input').element.value).toBe('10.000,00');
   });
 
-  it('usa teclado decimal e marca o prefixo R$ como decorativo', () => {
+  it('usa teclado decimal e lê o prefixo R$ como descrição do campo', () => {
     const wrapper = mount(MoneyInput, {
-      props: { id: 'valor', modelValue: null },
+      props: { id: 'valor', modelValue: null, describedBy: 'valor-dica' },
     });
 
     expect(wrapper.find('input').attributes('inputmode')).toBe('decimal');
     expect(wrapper.find('.prefix').text()).toBe('R$');
-    expect(wrapper.find('.prefix').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('.prefix').attributes('aria-hidden')).toBeUndefined();
+    expect(wrapper.find('input').attributes('aria-describedby')).toBe('valor-dica valor-unidade');
+    expect(wrapper.find('#valor-unidade').text()).toBe('R$');
   });
 });
