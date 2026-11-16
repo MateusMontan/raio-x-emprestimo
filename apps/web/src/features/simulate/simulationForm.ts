@@ -68,3 +68,15 @@ export function fromInput(input: SimulationInput): SimulationFormState {
     iofMode: input.iofMode,
   };
 }
+
+/** Alvo de foco de cada campo. Radios apontam para o primeiro do grupo. */
+export const FOCUS_TARGETS: Record<FormField, string> = {
+  amountCents: '#valor',
+  monthlyRate: '#taxa',
+  installments: '#prazo',
+  system: 'input[name="sistema"]',
+  contractDate: '#contratacao',
+  firstDueDate: '#primeiro-vencimento',
+  feesCents: '#tarifas',
+  iofMode: 'input[name="iof"]',
+};

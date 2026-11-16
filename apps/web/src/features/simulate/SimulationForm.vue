@@ -7,9 +7,14 @@ import IntegerInput from '../../design/components/IntegerInput.vue';
 import MoneyInput from '../../design/components/MoneyInput.vue';
 import PercentInput from '../../design/components/PercentInput.vue';
 import SegmentedControl from '../../design/components/SegmentedControl.vue';
-import { focusFirstInvalid } from './formFocus';
+import { focusFirstInvalid } from '../../shared/focusFirstInvalid';
 import SimulationOptions from './SimulationOptions.vue';
-import type { FormErrors, SimulationFormState } from './simulationForm';
+import {
+  FOCUS_TARGETS,
+  FORM_FIELDS,
+  type FormErrors,
+  type SimulationFormState,
+} from './simulationForm';
 
 const props = defineProps<{ errors: FormErrors; loading: boolean }>();
 const form = defineModel<SimulationFormState>('form', { required: true });
@@ -26,7 +31,7 @@ const OPCOES_SISTEMA: readonly { value: AmortizationSystem; label: string }[] = 
 async function onSubmit(): Promise<void> {
   emit('submit');
   await nextTick();
-  if (formEl.value) focusFirstInvalid(formEl.value, props.errors);
+  if (formEl.value) focusFirstInvalid(formEl.value, props.errors, FORM_FIELDS, FOCUS_TARGETS);
 }
 </script>
 
