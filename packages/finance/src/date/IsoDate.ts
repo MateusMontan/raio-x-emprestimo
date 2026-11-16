@@ -34,11 +34,7 @@ export class IsoDate {
   /** Soma dias corridos. */
   addDays(days: number): IsoDate {
     const shifted = new Date(Date.UTC(this.year, this.month - 1, this.day) + days * MS_PER_DAY);
-    return new IsoDate(
-      shifted.getUTCFullYear(),
-      shifted.getUTCMonth() + 1,
-      shifted.getUTCDate(),
-    );
+    return new IsoDate(shifted.getUTCFullYear(), shifted.getUTCMonth() + 1, shifted.getUTCDate());
   }
 
   /**

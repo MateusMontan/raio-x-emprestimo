@@ -80,7 +80,9 @@ describe('SacSchedule (R2)', () => {
 
   it('com taxa zero as parcelas são só amortização', () => {
     const rows = new SacSchedule().plan(reais(600), monthly(0), 6);
-    expect(rows.map((row) => row.payment.cents)).toEqual([10_000, 10_000, 10_000, 10_000, 10_000, 10_000]);
+    expect(rows.map((row) => row.payment.cents)).toEqual([
+      10_000, 10_000, 10_000, 10_000, 10_000, 10_000,
+    ]);
   });
 });
 
