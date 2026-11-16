@@ -86,8 +86,8 @@ Dado PV, PMT e n, encontra o `i` mensal que satisfaz a R1 (TIR da série uniform
 
 ## 6. Critérios de aceite (amostra)
 
-1. Price, R$ 10.000,00, 2% a.m., 12 meses → PMT = R$ 945,60; total = R$ 11.347,20 (antes de IOF e tarifas).
+1. Price, R$ 10.000,00, 2% a.m., 12 meses → PMT = R$ 945,60; total = R$ 11.347,15 (antes de IOF e tarifas; a última parcela, R$ 945,55, absorve o resíduo do arredondamento).
 2. SAC, R$ 12.000,00, 1% a.m., 12 meses → 1ª parcela R$ 1.120,00; última R$ 1.010,00.
 3. Raio-X: liberado R$ 5.000,00, parcela R$ 500,00, 12 meses → taxa implícita ≈ 2,92% a.m.
-4. Sem IOF, sem tarifas e com parcelas a cada 30 dias exatos, o CET mensal fica dentro de ±0,01 p.p. da taxa nominal.
+4. Sem IOF, sem tarifas e com parcelas a cada 30 dias exatos, o CET mensal fica próximo da taxa nominal. A diferença vem só da base de 365 dias da R4 (30 dias ≠ 1/12 de ano): ≈ 0,007 p.p. a 0,5% a.m. e ≈ 0,03 p.p. a 2% a.m. O teste documenta essa tolerância.
 5. `GET /s/:id` de um link expirado → página 404 amigável, com botão "Nova simulação".
