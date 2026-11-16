@@ -10,8 +10,9 @@ export default defineConfig({
         'src/**/*.test.ts',
         'src/**/types.ts',
         'src/**/index.ts',
+        'src/env.ts',
         'src/application/ports/**',
-        'src/application/testing/**',
+        'src/**/testing/**',
       ],
       reporter: ['text', 'lcov'],
       thresholds: {
