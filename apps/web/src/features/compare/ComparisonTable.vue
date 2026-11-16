@@ -56,7 +56,7 @@ function hasSeal(kind: SealKind | undefined, id: string): boolean {
                 Calculando…
               </p>
               <template v-else-if="column.state.status === 'error'">
-                <p class="status status--error">{{ column.state.message }}</p>
+                <p class="status status--error" role="alert">{{ column.state.message }}</p>
                 <button type="button" class="retry" @click="emit('retry', column.scenario.id)">
                   Tentar de novo
                 </button>

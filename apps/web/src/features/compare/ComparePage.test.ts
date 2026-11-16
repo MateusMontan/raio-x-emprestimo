@@ -229,4 +229,15 @@ describe('ComparePage', () => {
     expect(campo.element.value).toBe('Banco Norte');
     wrapper.unmount();
   });
+
+  it('anuncia o erro de uma coluna com role alert', async () => {
+    analisar.mockRejectedValueOnce(new Error('falha de rede'));
+    useComparison().add({ kind: 'offer', input: entry });
+
+    const wrapper = mountPage();
+    await flushPromises();
+
+    expect(wrapper.find('[role="alert"]').text()).toBe('Não foi possível calcular esta oferta.');
+    wrapper.unmount();
+  });
 });
