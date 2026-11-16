@@ -240,4 +240,22 @@ describe('ComparePage', () => {
     expect(wrapper.find('[role="alert"]').text()).toBe('Não foi possível calcular esta oferta.');
     wrapper.unmount();
   });
+
+  it('leva o foco ao nome da oferta recém-adicionada e anuncia a inclusão', async () => {
+    analisar.mockResolvedValueOnce(analise(0.021, 1_120_000));
+    const wrapper = mount(ComparePage, {
+      attachTo: document.body,
+      global: { stubs: { RouterLink: RouterLinkStub } },
+    });
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    const campo = wrapper.find('input[aria-label="Nome da oferta 1"]');
+    expect(document.activeElement).toBe(campo.element);
+    expect(wrapper.find('section[aria-label="Adicionar oferta"] p.visually-hidden').text()).toBe(
+      'Oferta 1 adicionada à comparação.',
+    );
+    wrapper.unmount();
+  });
 });
