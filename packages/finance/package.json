@@ -1,0 +1,27 @@
+{
+  "name": "@raiox/finance",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Domínio financeiro puro: Price, SAC, IOF, CET e taxa implícita.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "4.1.12",
+    "vitest": "4.1.12"
+  }
+}
