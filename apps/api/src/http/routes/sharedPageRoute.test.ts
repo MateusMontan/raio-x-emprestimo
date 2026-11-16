@@ -21,6 +21,7 @@ describe('GET /s/:id', () => {
     expect(res.headers.get('x-asset-source')).toBe('fake');
     expect(await res.text()).toBe(FAKE_PAGE_HTML);
     expect(assets.requestedUrls).toEqual(['http://localhost/']);
+    expect(res.headers.get('cache-control')).toBe('no-store');
   });
 
   it('devolve 404 com o mesmo HTML para id inexistente', async () => {
@@ -29,6 +30,7 @@ describe('GET /s/:id', () => {
     const res = await get(app, '/s/zzzzzzzzzz');
 
     expect(res.status).toBe(404);
+    expect(res.headers.get('cache-control')).toBe('no-store');
     expect(await res.text()).toBe(FAKE_PAGE_HTML);
   });
 
