@@ -50,14 +50,18 @@ jobs:
 
       # Migrations antes do deploy: o código novo espera o schema novo.
       - name: Aplicar migrations do D1
-        run: pnpm --filter @raiox/api exec wrangler d1 migrations apply raiox-db --remote
+        shell: bash
+        run: |
+          bash .github/scripts/run-and-annotate.sh "Migrations do D1" \
+            pnpm --filter @raiox/api exec wrangler d1 migrations apply raiox-db --remote
 
       - name: Publicar Worker
         id: publish
         shell: bash
         run: |
           set -euo pipefail
-          pnpm --filter @raiox/api exec wrangler deploy 2>&1 | tee deploy.log
+          bash .github/scripts/run-and-annotate.sh "Publicação do Worker" \
+            pnpm --filter @raiox/api exec wrangler deploy | tee deploy.log
           # || true: sem casamento o grep sai com 1, tratado logo abaixo.
           URL="$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | sed -n '1p' || true)"
           if [ -z "$URL" ]; then
