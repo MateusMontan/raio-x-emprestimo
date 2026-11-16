@@ -55,7 +55,12 @@ async function onSubmit(): Promise<void> {
       <MoneyInput v-bind="campo" v-model="form.releasedCents" />
     </BaseField>
 
-    <BaseField id="valor-parcela" v-slot="campo" label="Valor da parcela" :error="errors.paymentCents">
+    <BaseField
+      id="valor-parcela"
+      v-slot="campo"
+      label="Valor da parcela"
+      :error="errors.paymentCents"
+    >
       <MoneyInput v-bind="campo" v-model="form.paymentCents" />
     </BaseField>
 
