@@ -16,7 +16,13 @@ export function handleError(error: Error): Response {
   }
   if (error instanceof DomainError) {
     const problem = domainErrorToProblem(error);
-    if (problem !== null) return problemResponse(problem);
+    if (problem !== null) {
+      // Link com dados gravados fora do formato atual: o cliente recebe 410, mas o operador precisa ver.
+      if (error.code === 'STORED_SIMULATION_INVALID') {
+        console.error('[api] simulação compartilhada em formato não suportado', error);
+      }
+      return problemResponse(problem);
+    }
   }
   console.error('[api] erro não tratado', error);
   return problemResponse(internalErrorProblem());

@@ -76,6 +76,7 @@ export const getSharedRoute = createRoute({
       content: { 'application/json': { schema: sharedSimulationSchema } },
     },
     404: problemDoc('Simulação não encontrada ou expirada'),
+    410: problemDoc('Simulação gravada em formato que não é mais aceito (faça uma nova)'),
     500: BODY_ERRORS[500],
   },
 });

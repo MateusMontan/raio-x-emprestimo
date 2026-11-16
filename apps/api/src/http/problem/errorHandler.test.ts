@@ -61,11 +61,25 @@ describe('handleError', () => {
     expect(console.error).toHaveBeenCalledOnce();
   });
 
-  it('responde 500 para STORED_SIMULATION_INVALID e ID_COLLISION sem vazar a mensagem', async () => {
-    const invalido = handleError(new StoredSimulationInvalidError());
+  it('responde 410 Gone para STORED_SIMULATION_INVALID, com problema descritivo e log', async () => {
+    const res = handleError(new StoredSimulationInvalidError());
+
+    expect(res.status).toBe(410);
+    expect(res.headers.get('content-type')).toContain('application/problem+json');
+    expect(await res.json()).toEqual({
+      type: 'urn:raiox:problem:stored-simulation-invalid',
+      title: 'Link indisponível',
+      status: 410,
+      detail:
+        'Esta simulação foi salva em um formato que não é mais aceito. Faça uma nova simulação.',
+      code: 'STORED_SIMULATION_INVALID',
+    });
+    expect(console.error).toHaveBeenCalledOnce();
+  });
+
+  it('responde 500 para ID_COLLISION sem vazar a mensagem', async () => {
     const colisao = handleError(new IdCollisionError(3));
 
-    expect(invalido.status).toBe(500);
     expect(colisao.status).toBe(500);
     expect(await colisao.text()).not.toContain('tentativas');
   });

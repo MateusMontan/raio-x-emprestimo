@@ -7,6 +7,9 @@ import type { Clock } from '../ports/Clock';
 import type { SimulationReader } from '../ports/SimulationReader';
 import type { SharedSimulation } from './types';
 
+/** Versão do formato gravado que este código sabe ler. */
+const SUPPORTED_SCHEMA_VERSION = 1;
+
 /** F4: lê uma simulação compartilhada, revalida as entradas e recalcula o resultado. */
 export class GetSharedSimulation {
   constructor(
@@ -20,7 +23,10 @@ export class GetSharedSimulation {
       throw new SimulationNotFoundError();
     }
 
-    // O que vem do banco não é confiável: a entrada precisa passar pelo contrato de novo.
+    // O que vem do banco não é confiável: versão e entrada precisam passar de novo.
+    if (stored.schemaVersion !== SUPPORTED_SCHEMA_VERSION) {
+      throw new StoredSimulationInvalidError();
+    }
     const parsed = simulationInputSchema.safeParse(stored.input);
     if (!parsed.success) {
       throw new StoredSimulationInvalidError();

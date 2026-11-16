@@ -67,4 +67,18 @@ describe('GetSharedSimulation', () => {
       new GetSharedSimulation(repository, new FixedClock(START)).execute('corrompido1'),
     ).rejects.toBeInstanceOf(StoredSimulationInvalidError);
   });
+  it('lança StoredSimulationInvalidError quando a versão do esquema gravada não é a 1', async () => {
+    const repository = new InMemorySimulationRepository();
+    repository.seed({
+      id: 'versao0002',
+      input: aSimulationInput(),
+      schemaVersion: 2,
+      createdAt: '2026-03-01T12:00:00.000Z',
+      expiresAt: '2026-08-28T12:00:00.000Z',
+    });
+
+    await expect(
+      new GetSharedSimulation(repository, new FixedClock(START)).execute('versao0002'),
+    ).rejects.toBeInstanceOf(StoredSimulationInvalidError);
+  });
 });

@@ -5,6 +5,8 @@ import { buildProblem } from './problems';
 interface DomainMapping {
   readonly status: number;
   readonly title: string;
+  /** Texto fixo para o cliente. Sem ele, usa a mensagem do erro de domínio. */
+  readonly detail?: string;
   /** Erros por campo, quando o problema aponta um campo da entrada. */
   readonly fieldErrors?: () => readonly FieldError[];
 }
@@ -24,6 +26,12 @@ const CLIENT_ERRORS: Readonly<Record<string, DomainMapping>> = {
     ],
   },
   NON_CONVERGENCE: { status: 422, title: 'Cálculo não convergiu' },
+  STORED_SIMULATION_INVALID: {
+    status: 410,
+    title: 'Link indisponível',
+    detail:
+      'Esta simulação foi salva em um formato que não é mais aceito. Faça uma nova simulação.',
+  },
 };
 
 /** Primeira data em que há política de IOF cadastrada, em DD/MM/AAAA (menor `validFrom`). */
@@ -41,7 +49,7 @@ export function domainErrorToProblem(error: DomainError): Problem | null {
     status: mapping.status,
     slug: error.code.toLowerCase().replaceAll('_', '-'),
     title: mapping.title,
-    detail: error.message,
+    detail: mapping.detail ?? error.message,
     code: error.code,
     ...(mapping.fieldErrors !== undefined ? { errors: mapping.fieldErrors() } : {}),
   });
