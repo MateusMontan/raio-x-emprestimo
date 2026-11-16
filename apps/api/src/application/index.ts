@@ -12,3 +12,4 @@ export type { SimulationReader } from './ports/SimulationReader';
 export type { SimulationPurger } from './ports/SimulationPurger';
 export type { SimulationRecord, StoredSimulation } from './ports/types';
 export { SimulationNotFoundError, StoredSimulationInvalidError, IdCollisionError } from './errors';
+export type { RateLimiter } from './ports/RateLimiter';
