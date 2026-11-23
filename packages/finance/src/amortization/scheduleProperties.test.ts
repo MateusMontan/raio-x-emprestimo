@@ -103,5 +103,6 @@ describe('propriedades dos cronogramas dentro dos limites da R7', () => {
     // Garante que o teste exercita os dois caminhos e não só um deles.
     expect(accepted).toBeGreaterThan(0);
     expect(accepted).toBeLessThan(cases.length);
-  });
+    // Cada caso simula até 420 parcelas com IOF financiado; no CI isso passa de 5 s.
+  }, 60_000);
 });
