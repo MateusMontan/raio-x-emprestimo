@@ -46,7 +46,7 @@ jobs:
         run: pnpm typecheck
 
       - name: Testes
-        run: pnpm test
+        run: bash .github/scripts/run-and-annotate.sh "Testes" pnpm test
 
       # O Worker serve ../web/dist como assets, então o build da web vem antes do dry-run.
       - name: Build da web
